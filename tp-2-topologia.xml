@@ -2,55 +2,55 @@
 <scenario>
   <networks/>
   <devices>
-    <device id="1" name="Nave-Mae" icon="" canvas="1" type="PC" class="" image="" compose="" compose_name="">
+    <device id="1" name="Nave-Mae" icon="/volume/nave-Mae.webp" canvas="1" type="PC" class="" image="" compose="" compose_name="">
       <position x="486.0" y="332.0" lat="47.57614855837729" lon="-122.12577550032876" alt="2.0"/>
       <services>
         <service name="DefaultRoute"/>
       </services>
     </device>
-    <device id="2" name="Rover1" icon="" canvas="1" type="PC" class="" image="" compose="" compose_name="">
+    <device id="2" name="Rover1" icon="/volume/rover.webp" canvas="1" type="PC" class="" image="" compose="" compose_name="">
       <position x="163.0" y="126.0" lat="47.57802110271024" lon="-122.13012783788032" alt="2.0"/>
       <services>
         <service name="DefaultRoute"/>
       </services>
     </device>
-    <device id="3" name="Rover2" icon="" canvas="1" type="PC" class="" image="" compose="" compose_name="">
+    <device id="3" name="Rover2" icon="/volume/rover.webp" canvas="1" type="PC" class="" image="" compose="" compose_name="">
       <position x="834.0" y="132.0" lat="47.57796656353087" lon="-122.12108629454565" alt="2.0"/>
       <services>
         <service name="DefaultRoute"/>
       </services>
     </device>
-    <device id="4" name="Rover3" icon="" canvas="1" type="PC" class="" image="" compose="" compose_name="">
+    <device id="4" name="Rover3" icon="/volume/rover.webp" canvas="1" type="PC" class="" image="" compose="" compose_name="">
       <position x="490.0" y="682.0" lat="47.572966897468056" lon="-122.12572160141171" alt="2.0"/>
       <services>
         <service name="DefaultRoute"/>
       </services>
     </device>
-    <device id="5" name="Satelite1" icon="" canvas="1" type="router" class="" image="" compose="" compose_name="">
+    <device id="5" name="Satelite1" icon="/volume/satelite.png" canvas="1" type="router" class="" image="" compose="" compose_name="">
       <position x="308.0" y="222.0" lat="47.57714846902323" lon="-122.12817400213736" alt="2.0"/>
       <services>
-        <service name="zebra"/>
+        <service name="OSPFv2"/>
         <service name="IPForward"/>
         <service name="OSPFv3"/>
-        <service name="OSPFv2"/>
+        <service name="zebra"/>
       </services>
     </device>
-    <device id="6" name="Satelite2" icon="" canvas="1" type="router" class="" image="" compose="" compose_name="">
+    <device id="6" name="Satelite2" icon="/volume/satelite.png" canvas="1" type="router" class="" image="" compose="" compose_name="">
       <position x="656.0" y="232.0" lat="47.57705756884447" lon="-122.12348479635425" alt="2.0"/>
       <services>
-        <service name="zebra"/>
+        <service name="OSPFv2"/>
         <service name="IPForward"/>
         <service name="OSPFv3"/>
-        <service name="OSPFv2"/>
+        <service name="zebra"/>
       </services>
     </device>
-    <device id="7" name="Satelite3" icon="" canvas="1" type="router" class="" image="" compose="" compose_name="">
+    <device id="7" name="Satelite3" icon="/volume/satelite.png" canvas="1" type="router" class="" image="" compose="" compose_name="">
       <position x="489.0" y="506.0" lat="47.5745668425461" lon="-122.12573507614097" alt="2.0"/>
       <services>
-        <service name="zebra"/>
+        <service name="OSPFv2"/>
         <service name="IPForward"/>
         <service name="OSPFv3"/>
-        <service name="OSPFv2"/>
+        <service name="zebra"/>
       </services>
     </device>
   </devices>
