@@ -85,9 +85,32 @@ public class NaveMae {
         this.roversPorta = novo;
     }
 
+    public InetAddress getEndIP() {
+        return this.endIP;
+    }
 
-    
+    public int getPorta() {
+        return this.porta;
+    }
 
+    public void adicionarMissaoQueue(Missao m){
+        this.queue.add(m);
+    }
 
+    public Missao retirarMissaoQueue(){
+        return this.queue.remove();
+    }
+
+    public int numeroMissaoNaQueue(){
+        return this.queue.size();
+    }
+
+    public Missao verProximaMissao(){
+        return this.queue.element();
+    }
+
+    public void atualizaEstadoRover(String id, Estado e){
+        this.roversEstado.put(id, e);
+    }
 
 }

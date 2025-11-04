@@ -36,10 +36,57 @@ public class Missao implements Codificavel{
         this.freq_update = freq_update;
     }
 
+    public Missao(Missao m){
+        this.id = m.getId();
+        this.x1 = m.getX1();
+        this.y1 = m.getY1();
+        this.x2 = m.getX2();
+        this.y2 = m.getY2();
+        this.tarefa = m.getTarefa();
+        this.duracao = m.getDuracao();
+        this.freq_update = m.getFreqUpdate();
+    }
+
+    public int getId(){
+        return this.id;
+    }
+
+    public double getX1(){
+        return this.x1;
+    }
+
+    public double getY1(){
+        return this.y1;
+    }
+
+    public double getX2(){
+        return this.x2;
+    }
+
+    public double getY2(){
+        return this.y2;
+    }
+
+    public String getTarefa(){
+        return this.tarefa;
+    }
+
+    public int getDuracao(){
+        return this.duracao;
+    }
+
+    public int getFreqUpdate(){
+        return this.freq_update;
+    }
+
     public byte[] encode() throws IOException{
         return null;
     }
 
     public void decode(byte[] data) throws IOException{
+    }
+
+    public Missao clone(){
+        return new Missao(this);
     }
 }

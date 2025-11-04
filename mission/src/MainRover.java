@@ -5,7 +5,7 @@ public class MainRover {
 
     public static void main(String[] args) {
         if(args.length < 4){
-            System.out.println("Uso: java Rover @id @ip @porta");
+            System.out.println("Uso: java MainRover @id @ip @porta");
             return;
         }
 

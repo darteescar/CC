@@ -8,7 +8,7 @@ public class MainNaveMae {
 
     public static void main(String[] args) {
         if(args.length < 4 + 3*Integer.parseInt(args[3])){
-            System.out.println("Uso: java NaveMae @ip @porta @NumeroDeRovers @id1 @ip1 @porta1 @idX @ipX @portaX ");
+            System.out.println("Uso: java MainNaveMae @ip @porta @NumeroDeRovers @id1 @ip1 @porta1 @idX @ipX @portaX ");
             return;
         }
 

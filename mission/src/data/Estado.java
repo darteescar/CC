@@ -27,6 +27,14 @@ public class Estado implements Codificavel{
         this.velocidade = velocidade;
     }
 
+    public Estado(Estado e){
+        this.x = e.getX();
+        this.y = e.getY();
+        this.estado_operacional = e.getEstadoOperacional();
+        this.bateria = e.getBateria();
+        this.velocidade = e.getVelocidade();
+    }   
+
     public double getX(){
         return this.x;
     }
@@ -73,5 +81,9 @@ public class Estado implements Codificavel{
 
     public void decode(byte[] data) throws IOException{
 
+    }
+
+    public Estado clone(){
+        return new Estado(this);
     }
 }
