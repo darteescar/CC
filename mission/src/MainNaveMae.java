@@ -1,8 +1,8 @@
+import data.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import data.*;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 public class MainNaveMae {
 
@@ -16,9 +16,11 @@ public class MainNaveMae {
             InetAddress ip = InetAddress.getByName(args[1]);
             int porta = Integer.parseInt(args[2]);
             int nRovers = Integer.parseInt(args[3]);
+
             Map<String, Estado> m1 = new HashMap<>();
             Map<String, InetAddress> m2 = new HashMap<>();
             Map<String, Integer> m3 = new HashMap<>();
+            
             for(int i = 0; i < nRovers; i++){
                 String id = args[4 + i*3];
                 InetAddress roverIP = InetAddress.getByName(args[5 + i*3]);

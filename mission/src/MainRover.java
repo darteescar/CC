@@ -13,7 +13,11 @@ public class MainRover {
             String id = args[1];
             InetAddress ip = InetAddress.getByName(args[2]);
             int porta = Integer.parseInt(args[3]);
+
             Rover rover = new Rover(id, ip, porta);
+            rover.startComms();
+            rover.start();
+
         }catch(UnknownHostException e){
             System.out.println("Erro no ip: " + e);
         }

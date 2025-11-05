@@ -1,13 +1,12 @@
 package data;
 
-import java.io.IOException;
-
 import interfaces.Codificavel;
+import java.io.IOException;
 
 public class Estado implements Codificavel{
     private double x;
     private double y;
-    private String estado_operacional;
+    private EstadoOperacional estado_operacional;
     private int bateria;
     private float velocidade; // em Km/h
 
@@ -19,7 +18,7 @@ public class Estado implements Codificavel{
         this.velocidade = 0;
     }
 
-    public Estado(double x, double y, String estado_operacional, int bateria, float velocidade){
+    public Estado(double x, double y, EstadoOperacional estado_operacional, int bateria, float velocidade){
         this.x = x;
         this.y = y;
         this.estado_operacional = estado_operacional;
@@ -43,7 +42,7 @@ public class Estado implements Codificavel{
         return this.y;
     }
 
-    public String getEstadoOperacional(){
+    public EstadoOperacional getEstadoOperacional(){
         return this.estado_operacional;
     }
 
@@ -63,8 +62,8 @@ public class Estado implements Codificavel{
         this.y = y;
     }
 
-    public void setEstadoOperacional(String estadp_operacional){
-        this.estado_operacional = estadp_operacional;
+    public void setEstadoOperacional(EstadoOperacional estado_operacional){
+        this.estado_operacional = estado_operacional;
     }
 
     public void setBateria(int bateria){

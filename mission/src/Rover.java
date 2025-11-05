@@ -1,7 +1,5 @@
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 import data.*;
+import java.net.InetAddress;
 import protocols.MissionLink;
 import protocols.TelemetryStream;
 
@@ -14,17 +12,13 @@ public class Rover {
     private MissionLink ml;
     private TelemetryStream ts;
 
-    private boolean emMissao; // Indica se o rover está atualmente em missão
-
     public Rover(String id, InetAddress ip, int porta){
         this.id = id;
         this.ip = ip;
         this.porta = porta;
         this.estado = new Estado();
-        // this.ml = new MissionLink(porta);
-        // this.ts = new TelemetryStream(porta);
-
-        this.emMissao = false;
+        //this.ml = new MissionLink(porta);
+        this.ts = new TelemetryStream(ip,porta);
     }
 
     public Estado getEstado(){
@@ -43,16 +37,39 @@ public class Rover {
         return this.id;
     }
 
-    public boolean estaEmMissao(){
-        return this.emMissao;
-    }
+    public void startComms(){
+        EstadoOperacional estado_atual = this.getEstado().getEstadoOperacional();
 
-    public void realizarMissao(Missao m){
-        this.emMissao = true;
-        this.atualizaEstado(m); 
-    }
+        if (estado_atual.) {
+            System.out.println("Rover " + this.id + " já está em missão. Não é possível iniciar comunicação.");
+            // envia que ja esta em Missao à nave-mãe
+            return;
+        }
 
-    public void atualizaEstado(Missao m){
+        if () {
+            System.out.println("Rover " + this.id + " está com falha no sistema. Não é possível iniciar comunicação.");
+            // envia falha à nave-mãe
+            return;
+        }
         
+
     }
+
+    public void start() {
+        // Inicia a comunicação com a nave-mãe
+        
+        
+        if (this.emMissao) {
+            // envia que ja esta em Missao
+            return;
+        }
+
+        if 
+
+
+    }
+
+    
+
+    
 }
