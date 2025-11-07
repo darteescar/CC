@@ -47,6 +47,22 @@ public class Mensagem implements Serializable {
         return id_dest; 
     }
 
+    public InetAddress getIpOrg() { 
+        return ip_org; 
+    }
+
+    public InetAddress getIpDest() { 
+        return ip_dest; 
+    }
+
+    public int getPortaOrg() { 
+        return porta_org; 
+    }
+
+    public int getPortaDest() { 
+        return porta_dest; 
+    }
+
     public byte[] getPayload() { 
         return payload; 
     }

@@ -12,6 +12,8 @@ public class MainNaveMae {
             return;
         }
 
+        NaveMae naveMae = null;
+
         try{
             InetAddress ip = InetAddress.getByName(args[1]);
             int porta = Integer.parseInt(args[2]);
@@ -29,9 +31,17 @@ public class MainNaveMae {
                 m2.put(id, roverIP);
                 m3.put(id, roverPorta);
             }
-            NaveMae naveMae = new NaveMae(ip, porta, m1, m2, m3);   
+            naveMae = new NaveMae(ip, porta, m1, m2, m3);
         }catch(UnknownHostException e){
             System.out.println("Erro no ip: " + e);
+        }
+
+        naveMae.adicionarMissaoQueue(new Missao(2367, 1, 2, 3, 4, "Anda por aí", 5, 5));
+        naveMae.adicionarMissaoQueue(new Missao(2368, 1, 2, 3, 4, "Anda por aí", 5, 5));
+        naveMae.adicionarMissaoQueue(new Missao(2369, 1, 2, 3, 4, "Anda por aí", 5, 5));
+
+        if (naveMae != null) {
+            naveMae.startNaveMae();
         }
     }
     

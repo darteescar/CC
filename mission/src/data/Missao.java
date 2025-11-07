@@ -8,7 +8,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class Missao implements Codificavel{
-    private final int id;
+    private int id;
     private double x1;
     private double y1;
     private double x2;
@@ -113,6 +113,8 @@ public class Missao implements Codificavel{
         try {
             ByteArrayInputStream bais = new ByteArrayInputStream(data);
             DataInputStream dis = new DataInputStream(bais);
+
+            this.id = dis.readInt();
 
             this.x1 = dis.readDouble();
             this.y1 = dis.readDouble();

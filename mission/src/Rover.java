@@ -31,7 +31,7 @@ public class Rover {
 
         this.id_NaveMae = id_NaveMae;
         this.ip_NaveMae = ip_NaveMae;
-        this.porta_NaveMae = porta_NaveMae;
+        this.porta_NaveMae = porta_NaveMae;;
 
         try {
             // Rover escuta missões vindas da nave-mãe via UDP
@@ -76,7 +76,7 @@ public class Rover {
 
             if (estado_op == EstadoOperacional.EM_MISSAO ) {
                 byte[] payload = this.estado.toByteArray();
-                Mensagem msg = new Mensagem(TipoMensagem.ML_DATA,
+                Mensagem msg = new Mensagem(TipoMensagem.TS_REPORT,
                                                             this.id,
                                                             this.ip,
                                                             this.porta,
@@ -101,8 +101,6 @@ public class Rover {
         while (true) { 
             EstadoOperacional estado = this.getEstado().getEstadoOperacional();
 
-            // logica de threeway handshake para iniciar comunicação
-
             switch (estado) {
                 case EstadoOperacional.EM_MISSAO:
                     // NADA, ESTÁ A ENVIAR TELEMETRIA POR TCP
@@ -111,14 +109,53 @@ public class Rover {
                     // envia falha
                     break;
                 case EstadoOperacional.PARADO:
-                    requestMission();
-                    receiveMission(this.missao_atual);
-                    this.estado.setEstadoOperacional(EstadoOperacional.EM_MISSAO);
+                    boolean handshakeSuccess = startThreewayHandshake();
+
+                    if (handshakeSuccess) {
+                        requestMission();
+                        receiveMission(this.missao_atual);
+                    }
+
                     break;
                 default:
                     break;
             }
         }
+    }
+
+    public boolean startThreewayHandshake(){
+        try {
+            Mensagem payload = new Mensagem(TipoMensagem.ML_SYN,
+                                                    this.id,
+                                                    this.ip,
+                                                    this.porta,
+                                                    this.id_NaveMae,
+                                                    this.ip_NaveMae,
+                                                    this.porta_NaveMae,
+                                                    new byte[0]);
+            byte[] msg = payload.toByteArray();
+            
+            this.ml.sendMensagem(msg, this.ip_NaveMae, this.porta_NaveMae);
+            System.out.println("[Rover] Started three-way handshake via MissionLink.");
+        } catch (Exception e) {
+            System.out.println("[ERRO]  Three-way handshake falhou: " + e.getMessage());
+        }
+
+        try {
+            Mensagem msg_recebida = this.ml.receiveMensagem();
+
+            if (msg_recebida.getTipo() != TipoMensagem.ML_SYNACK) {
+                System.out.println("[ERRO] Three-way handshake falhou: tipo de mensagem inesperado.");
+                return false;
+            }
+
+            System.out.println("[Rover] Three-way handshake via MissionLink concluído com sucesso.");
+
+        } catch (Exception e) {
+            System.out.println("[ERRO]" + e.getMessage());
+        }
+
+        return true;
     }
 
     void requestMission(){
@@ -148,17 +185,40 @@ public class Rover {
             String s = missao.toString();
             System.out.println("[Rover] Missão recebida via MissionLink: " + s);
 
+            this.estado.setEstadoOperacional(EstadoOperacional.EM_MISSAO);
+            sendConfirmation();
+
         } catch (Exception e) {
             System.out.println("[ERRO] Falha ao receber mensagem via MissionLink: " + e.getMessage());
         }
     }
 
+    void sendConfirmation(){
+        try {
+            Mensagem payload = new Mensagem(TipoMensagem.ML_CONFIRM,
+                                                    this.id,
+                                                    this.ip,
+                                                    this.porta,
+                                                    this.id_NaveMae,
+                                                    this.ip_NaveMae,
+                                                    this.porta_NaveMae,
+                                                    new byte[0]);
+            byte[] msg = payload.toByteArray();
+            
+            this.ml.sendMensagem(msg, this.ip_NaveMae, this.porta_NaveMae);
+            System.out.println("[Rover] Confirmação da recepção da missão enviada via MissionLink.");
+        } catch (Exception e) {
+            System.out.println("[ERRO] Falha na recepção da missão via MissionLink: " + e.getMessage());
+        }
+    }
+
     void move(){
+        /* 
         while (true) {
             EstadoOperacional estado = this.getEstado().getEstadoOperacional();
 
             if (estado == EstadoOperacional.EM_MISSAO) {
-                if (/*nao esta na area da missao*/) {
+                if (nao esta na area da missao) {
                     // mover-se para a area da missao
                 } else {
                     // executar a missao durante o tempo estipulado
@@ -168,5 +228,6 @@ public class Rover {
                 // atualizar estado para PARADO apos completar a missao
             }  
         }
+        */
     }
 }

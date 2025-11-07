@@ -7,7 +7,9 @@ public enum TipoMensagem {
     ML_DATA((byte)4),
     ML_CONFIRM((byte)5),
     ML_ACK((byte)6),
-    TS_TCP((byte)7);
+    TS_TCP((byte)7),
+    TS_REPORT((byte)8),
+    TS_CONFIRM((byte)9);
 
     private final byte codigo;
 
