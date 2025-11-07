@@ -150,22 +150,23 @@ public class NaveMae {
     public void startMissionManager(){
 
         while(true){
-            Mensagem msg = this.receiveMessageML();// Fazer de forma concorrente
-            new Thread(() -> processRequestML(msg) ).start();
+            Mensagem msg = this.receiveMessageML();
+            new Thread(() -> {
+                if (msg.getTipo() == TipoMensagem.ML_SYN && msg != null){
+                    sendSynAck(msg.getIdOrg(), msg.getIpOrg(), msg.getPortaOrg());
+                } else if (msg.getTipo() == TipoMensagem.ML_REQUEST && msg != null){
+                    processRequestML(msg);
+                } else if (msg.getTipo() == TipoMensagem.ML_CONFIRM && msg != null){
+                    System.out.println("[NaveMae] Confirmação de receção de missão recebida do rover " + msg.getIdOrg() + " via MissionLink.");
+                } else {
+                    System.out.println("[NaveMae] Mensagem de tipo desconhecido recebida via MissionLink.");
+                }
+            }).start();       
         }
         
     }
 
     public void processRequestML(Mensagem msg){
-        if (msg == null || msg.getTipo() != TipoMensagem.ML_SYN) {
-            System.out.println("[NaveMae] Mensagem inválida recebida via MissionLink.");
-            return;
-        } else if (msg.getTipo() == TipoMensagem.ML_SYN && msg != null) {
-            System.out.println("[NaveMae] SYN recebido via MissionLink.");
-            sendSynAck(msg.getIdOrg(), msg.getIpOrg(), msg.getPortaOrg());
-
-            msg = this.receiveMessageML();//Request da Missao
-        }
 
         if(msg != null && msg.getTipo() == TipoMensagem.ML_REQUEST){
             String id_rover = msg.getIdOrg();
