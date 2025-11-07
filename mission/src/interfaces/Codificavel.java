@@ -3,6 +3,6 @@ package interfaces;
 import java.io.IOException;
 
 public interface Codificavel {
-    byte[] encode() throws IOException;
-    void decode(byte[] data) throws IOException;
+    byte[] toByteArray() throws IOException;
+    void fromByteArray(byte[] data) throws IOException;
 }

@@ -57,9 +57,18 @@ public class Mensagem implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("[Mensagem] tipo=%s, seq=%d, origem=%s:%d, destino=%s:%d, tam=%d bytes",
-                tm, seqNumber, ip_org.getHostAddress(), porta_org,
-                ip_dest.getHostAddress(), porta_dest, payload.length);
+        return "Mensagem{" +
+                "tm=" + tm +
+                ", id_org='" + id_org + '\'' +
+                ", ip_org=" + ip_org.getHostAddress() +
+                ", porta_org=" + porta_org +
+                ", id_dest='" + id_dest + '\'' +
+                ", ip_dest=" + ip_dest.getHostAddress() +
+                ", porta_dest=" + porta_dest +
+                ", payload_length=" + payload.length +
+                ", seqNumber=" + seqNumber +
+                '}';
+        
     }
 
     // Serialização

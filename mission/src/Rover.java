@@ -4,21 +4,49 @@ import protocols.MissionLink;
 import protocols.TelemetryStream;
 
 public class Rover {
+
+    // Identificação do Rover
     private final String id; // R-x
     private final InetAddress ip;
     private final int porta;
     private Estado estado;
+    private Missao missao_atual;
 
+    // Identificação da Nave Mãe
+    private final String id_NaveMae;
+    private final InetAddress ip_NaveMae;
+    private final int porta_NaveMae;
+
+    // Protocolos
     private MissionLink ml;
     private TelemetryStream ts;
 
-    public Rover(String id, InetAddress ip, int porta){
+    public Rover(String id, InetAddress ip, int porta,
+                 String id_NaveMae, InetAddress ip_NaveMae, int porta_NaveMae) {
         this.id = id;
         this.ip = ip;
         this.porta = porta;
         this.estado = new Estado();
-        //this.ml = new MissionLink(porta);
-        this.ts = new TelemetryStream(ip,porta);
+        this.missao_atual = new Missao();
+
+        this.id_NaveMae = id_NaveMae;
+        this.ip_NaveMae = ip_NaveMae;
+        this.porta_NaveMae = porta_NaveMae;
+
+        try {
+            // Rover escuta missões vindas da nave-mãe via UDP
+            this.ml = new MissionLink(porta);
+
+            // Rover conecta-se à nave-mãe para enviar telemetria via TCP
+            this.ts = new TelemetryStream(ip_NaveMae, porta_NaveMae);
+
+            System.out.println("[Rover] " + id + " inicializado.");
+            System.out.println(" - Escutando missões UDP na porta " + porta);
+            System.out.println(" - Telemetria TCP conectada à nave-mãe em " + ip_NaveMae + ":" + porta_NaveMae);
+
+        } catch (Exception e) {
+            System.out.println("[ERRO] Falha ao iniciar Rover: " + e.getMessage());
+        }
     }
 
     public Estado getEstado(){
@@ -38,38 +66,90 @@ public class Rover {
     }
 
     public void startComms(){
-        EstadoOperacional estado_atual = this.getEstado().getEstadoOperacional();
-
-        if (estado_atual.) {
-            System.out.println("Rover " + this.id + " já está em missão. Não é possível iniciar comunicação.");
-            // envia que ja esta em Missao à nave-mãe
-            return;
-        }
-
-        if () {
-            System.out.println("Rover " + this.id + " está com falha no sistema. Não é possível iniciar comunicação.");
-            // envia falha à nave-mãe
-            return;
-        }
-        
-
+        new Thread(() -> startTS() ).start();
+        new Thread(() -> startML()).start();
     }
 
-    public void start() {
-        // Inicia a comunicação com a nave-mãe
-        
-        
-        if (this.emMissao) {
-            // envia que ja esta em Missao
-            return;
+    public void startTS(){
+        while (true) { 
+            EstadoOperacional estado_op = this.getEstado().getEstadoOperacional();
+
+            if (estado_op == EstadoOperacional.EM_MISSAO ) {
+                byte[] payload = this.estado.toByteArray();
+                Mensagem msg = new Mensagem(TipoMensagem.ML_DATA,
+                                                            this.id,
+                                                            this.ip,
+                                                            this.porta,
+                                                            this.id_NaveMae,
+                                                            this.ip_NaveMae,
+                                                            this.porta_NaveMae,
+                                                            payload);      
+                this.ts.enviarMensagem(msg);
+            }
+
+            try {
+                int freq_update = this.missao_atual.getFreqUpdate();
+                
+                Thread.sleep(freq_update); // espera 1 segundo (por padrão)
+            } catch (InterruptedException e) {
+                e.printStackTrace();                
+            }
         }
-
-        if 
-
-
     }
 
-    
+    public void startML(){
+        while (true) { 
+            EstadoOperacional estado = this.getEstado().getEstadoOperacional();
 
-    
+            // logica de threeway handshake para iniciar comunicação
+
+            switch (estado) {
+                case EstadoOperacional.EM_MISSAO:
+                    // NADA, ESTÁ A ENVIAR TELEMETRIA POR TCP
+                    break;
+                case EstadoOperacional.INOPERACIONAL:
+                    // envia falha
+                    break;
+                case EstadoOperacional.PARADO:
+                    requestMission();
+                    receiveMission(this.missao_atual);
+                    this.estado.setEstadoOperacional(EstadoOperacional.EM_MISSAO);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    void requestMission(){
+        try {
+            Mensagem payload = new Mensagem(TipoMensagem.ML_REQUEST,
+                                                    this.id,
+                                                    this.ip,
+                                                    this.porta,
+                                                    this.id_NaveMae,
+                                                    this.ip_NaveMae,
+                                                    this.porta_NaveMae,
+                                                    new byte[0]);
+            byte[] msg = payload.toByteArray();
+            
+            this.ml.sendMensagem(msg, this.ip_NaveMae, this.porta_NaveMae);
+            System.out.println("[Rover] Solicitação de missão enviada via MissionLink.");
+        } catch (Exception e) {
+            System.out.println("[ERRO] Falha ao solicitar missão via MissionLink: " + e.getMessage());
+        }
+    }
+
+    void receiveMission(Missao missao){
+        try {
+            Mensagem msg_recebida = this.ml.receiveMensagem();
+            byte[] payload = msg_recebida.getPayload();
+            missao.fromByteArray(payload);
+            String s = missao.toString();
+            System.out.println("[Rover] Missão recebida via MissionLink: " + s);
+
+        } catch (Exception e) {
+            System.out.println("[ERRO] Falha ao receber mensagem via MissionLink: " + e.getMessage());
+        }
+    }
 }

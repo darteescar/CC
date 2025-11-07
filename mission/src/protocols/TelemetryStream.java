@@ -1,6 +1,7 @@
 package protocols;
 import data.Mensagem;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -97,6 +98,18 @@ public class TelemetryStream {
           } catch (IOException e) {
                System.err.println("Erro ao receber mensagem: " + e.getMessage());
                return null;
+          }
+     }
+
+     public void enviarMensagem(Mensagem mensagem) {
+          try {
+               byte[] data = mensagem.toByteArray();
+               DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+               out.writeInt(data.length);
+               out.write(data);
+               out.flush();
+          } catch (IOException e) {
+               System.err.println("Erro ao enviar mensagem: " + e.getMessage());
           }
      }
 
