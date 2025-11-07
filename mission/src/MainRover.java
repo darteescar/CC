@@ -19,6 +19,7 @@ public class MainRover {
 
             Rover rover = new Rover(id, ip, porta, id_nave_mae, ip_nave_mae, porta_nave_mae);
             rover.startComms();
+            rove.move();
 
         }catch(UnknownHostException e){
             System.out.println("Erro no ip: " + e);

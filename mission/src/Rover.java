@@ -152,4 +152,21 @@ public class Rover {
             System.out.println("[ERRO] Falha ao receber mensagem via MissionLink: " + e.getMessage());
         }
     }
+
+    void move(){
+        while (true) {
+            EstadoOperacional estado = this.getEstado().getEstadoOperacional();
+
+            if (estado == EstadoOperacional.EM_MISSAO) {
+                if (/*nao esta na area da missao*/) {
+                    // mover-se para a area da missao
+                } else {
+                    // executar a missao durante o tempo estipulado
+                    // diminui bateria de acordo com a velocidade ?
+                    // se ficar sem bateria, mudar estado para INOPERACIONAL e break
+                }
+                // atualizar estado para PARADO apos completar a missao
+            }  
+        }
+    }
 }
