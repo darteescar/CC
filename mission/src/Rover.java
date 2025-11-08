@@ -98,13 +98,13 @@ public class Rover {
             EstadoOperacional estado = this.getEstado().getEstadoOperacional();
 
             switch (estado) {
-                case EstadoOperacional.EM_MISSAO:
+                case EM_MISSAO:
                     // NADA, ESTÁ A ENVIAR TELEMETRIA POR TCP
                     break;
-                case EstadoOperacional.INOPERACIONAL:
+                case INOPERACIONAL:
                     // envia falha
                     break;
-                case EstadoOperacional.PARADO:
+                case PARADO:
                     boolean handshakeSuccess = startThreewayHandshake();
 
                     if (handshakeSuccess) {
@@ -204,6 +204,11 @@ public class Rover {
             }  
         }
         */
+        try {
+            Thread.sleep(1000*30); // simula o tempo a executar a missão
+        } catch (InterruptedException e) {
+            System.out.println("[ERRO] Interrupção durante a execução da missão: " + e.getMessage());
+        }
     }
 
     /* ========== Métodos relacionados ao TelemetryStream ========== */
