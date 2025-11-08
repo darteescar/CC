@@ -35,11 +35,12 @@ public class TelemetryStream {
                System.out.println("Erro ao conectar ao servidor na porta " + porta + " - " + e.getMessage());
           }
      }
-
+/*
      public Mensagem obterMensagemServidor() {
+          Socket clientSocket = null;
           try {
-               Socket socket = serverSocket.accept();
-               DataInputStream dis = new DataInputStream(socket.getInputStream());
+               clientSocket = serverSocket.accept();
+               DataInputStream dis = new DataInputStream(clientSocket.getInputStream());
                int len = dis.readInt();
                byte[] data = new byte[len];
                dis.readFully(data);
@@ -48,20 +49,22 @@ public class TelemetryStream {
                System.err.println("Erro ao receber mensagem: " + e.getMessage());
                return null;
           } finally {
-               try {
-                    socket.close();
-               } catch (IOException e) {
-                    System.err.println("Erro ao fechar socket: " + e.getMessage());
+               if (clientSocket != null) {
+                    try {
+                         clientSocket.close();
+                    } catch (IOException e) {
+                         System.err.println("Erro ao fechar socket: " + e.getMessage());
+                    }
                }
           }
      }
-
+*/
 
      public void startServerNaveMae(){
           while (true) { 
               try {
                     Socket clientSocket = serverSocket.accept();
-                    System.out.println("Conexão aceita de " + clientSocket.getInetAddress());
+                    //System.out.println("Conexão aceita de " + clientSocket.getInetAddress());
                     // Cria uma thread para lidar com cada rover
                     new Thread(() -> handleClient(clientSocket)).start();
               } catch (IOException e) {
@@ -72,6 +75,7 @@ public class TelemetryStream {
 
      public void handleClient(Socket clientSocket) {
           try (DataInputStream dis = new DataInputStream(clientSocket.getInputStream())) {
+               System.out.println();
                while (true) {
                     int length;
                     try {
@@ -103,6 +107,7 @@ public class TelemetryStream {
           } finally {
                try {
                     clientSocket.close();
+                    System.out.println();
                } catch (IOException e) {
                     System.err.println("Erro ao fechar socket: " + e.getMessage());
                }

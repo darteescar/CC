@@ -7,7 +7,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class Missao implements Codificavel{
+public class Missao implements Codificavel, Comparable<Missao>{
     private int id;
     private double x1;
     private double y1;
@@ -26,6 +26,13 @@ public class Missao implements Codificavel{
         this.tarefa = "";
         this.duracao = 0;
         this.freq_update = 1000;
+    }
+
+    @Override
+    public int compareTo(Missao other) {
+        // Ordenação por id ascendente (IDs mais baixos têm maior prioridade).
+        // Ajusta aqui se preferires outra política (e.g., duração, área, etc.).
+        return Integer.compare(this.id, other.id);
     }
 
     public Missao(int id, double x1, double y1, double x2, double y2, String tarefa, int duracao, int freq_update){

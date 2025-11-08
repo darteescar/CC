@@ -99,7 +99,8 @@ public class Rover {
 
             switch (estado) {
                 case EM_MISSAO:
-                    // NADA, ESTÁ A ENVIAR TELEMETRIA POR TCP
+                    // NADA
+                    // Talvez meter o move() aqui no futuro
                     break;
                 case INOPERACIONAL:
                     // envia falha
@@ -110,6 +111,7 @@ public class Rover {
                     if (handshakeSuccess) {
                         requestMission();
                         receiveMission(this.missao_atual);
+                        System.out.println();
                     }
 
                     break;
@@ -149,8 +151,7 @@ public class Rover {
             Mensagem msg_recebida = this.ml.receiveMensagem();
             byte[] payload = msg_recebida.getPayload();
             missao.fromByteArray(payload);
-            String s = missao.toString();
-            System.out.println("[Rover] Missão recebida via MissionLink: " + s);
+            System.out.println("[Rover] Missão recebida via MissionLink.");
 
             this.estado.setEstadoOperacional(EstadoOperacional.EM_MISSAO);
             sendMessageNaveMaeML(TipoMensagem.ML_CONFIRM, new byte[0]); 
@@ -188,26 +189,20 @@ public class Rover {
     }
 
     public void move(){
-        /* 
+        // Temporário
         while (true) {
-            EstadoOperacional estado = this.getEstado().getEstadoOperacional();
+            EstadoOperacional estado_op = this.getEstado().getEstadoOperacional();
+            
 
-            if (estado == EstadoOperacional.EM_MISSAO) {
-                if (nao esta na area da missao) {
-                    // mover-se para a area da missao
-                } else {
-                    // executar a missao durante o tempo estipulado
-                    // diminui bateria de acordo com a velocidade ?
-                    // se ficar sem bateria, mudar estado para INOPERACIONAL e break
+            if (estado_op == EstadoOperacional.EM_MISSAO) {
+                try {
+                    Thread.sleep(1000*10); // simula o tempo a executar a missão
+                    this.estado.setEstadoOperacional(EstadoOperacional.PARADO);
+                    System.out.println("[Rover] Missão concluída. Estado atualizado para PARADO.\n");
+                } catch (InterruptedException e) {
+                    System.out.println("[ERRO] Interrupção durante a execução da missão: " + e.getMessage());
                 }
-                // atualizar estado para PARADO apos completar a missao
-            }  
-        }
-        */
-        try {
-            Thread.sleep(1000*30); // simula o tempo a executar a missão
-        } catch (InterruptedException e) {
-            System.out.println("[ERRO] Interrupção durante a execução da missão: " + e.getMessage());
+            }
         }
     }
 

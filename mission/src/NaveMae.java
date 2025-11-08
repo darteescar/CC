@@ -133,17 +133,16 @@ public class NaveMae {
     }
 
     public void reporMissoesQueue(){
-        adicionarMissaoQueue(new Missao(2367, 1, 2, 3, 4, "Anda por aí", 5, 5));
-        adicionarMissaoQueue(new Missao(2368, 1, 2, 3, 4, "Anda por aí", 5, 5));
-        adicionarMissaoQueue(new Missao(2369, 1, 2, 3, 4, "Anda por aí", 5, 5));
-
+        adicionarMissaoQueue(new Missao(2367, 1, 2, 3, 4, "Anda por aí", 1, 3000));
+        adicionarMissaoQueue(new Missao(2368, 1, 2, 3, 4, "Anda por aí", 1, 3000));
+        adicionarMissaoQueue(new Missao(2369, 1, 2, 3, 4, "Anda por aí", 1, 3000));
         //Acabar
     }
 
     /* ========== Método para iniciar a Nave Mãe ==========*/
 
     public void startNaveMae(){
-        new Thread(() -> startServerTS() ).start();
+        new Thread(() -> startServerTS()).start();
         new Thread(() -> startMissionManager() ).start();
         //new Thread(() -> startAPI() ).start();
     }
@@ -155,7 +154,8 @@ public class NaveMae {
     }
 
     public void startServerTS(){
-        
+        this.ts.startServerNaveMae();
+        /*
         while(true){
             Mensagem msg = this.receiveMessageTS();
             new Thread(() -> {
@@ -171,6 +171,7 @@ public class NaveMae {
                 }
             }).start();
         }
+        */
         
     }
 
@@ -245,10 +246,11 @@ public class NaveMae {
 
     /* ========== Métodos relacionados ao TelemetryStream ========== */
 
-    
+    /*
     public Mensagem receiveMessageTS(){
         return this.ts.obterMensagemServidor();
     }
+        */
     
 
 }

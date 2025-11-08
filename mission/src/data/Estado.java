@@ -10,7 +10,8 @@ import java.io.IOException;
 public class Estado implements Codificavel{
     private double x;
     private double y;
-    private EstadoOperacional estado_operacional;
+    // volatile garante visibilidade das alterações entre threads sem sincronização
+    private volatile EstadoOperacional estado_operacional;
     private int bateria;
     private float velocidade; // em Km/h
 

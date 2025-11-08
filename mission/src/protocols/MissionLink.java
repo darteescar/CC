@@ -25,8 +25,8 @@ public class MissionLink {
         DatagramPacket pacote = new DatagramPacket(buffer, buffer.length);
         socket.receive(pacote);
         Mensagem m = Mensagem.fromByteArray(buffer);
-        String mens = m.toString();
-        System.out.println("[MissionLink] Mensagem recebida: " + mens);
+        //String mens = m.toString();
+        //System.out.println("[MissionLink] Mensagem recebida: " + mens);
         return m;
     }
 
