@@ -43,6 +43,10 @@ public class MainNaveMae {
         if (naveMae != null) {
             naveMae.startNaveMae();
         }
+
+        while(true){
+            // Manter o programa em execução
+        }
     }
     
 }

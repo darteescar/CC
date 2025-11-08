@@ -35,7 +35,7 @@ public class TelemetryStream {
                System.out.println("Erro ao conectar ao servidor na porta " + porta + " - " + e.getMessage());
           }
      }
-/* 
+/*
      public Mensagem obterMensagemServidor() {
           try {
                Socket socket = serverSocket.accept();
@@ -47,9 +47,16 @@ public class TelemetryStream {
           } catch (IOException e) {
                System.err.println("Erro ao receber mensagem: " + e.getMessage());
                return null;
+          } finally {
+               try {
+                    socket.close();
+               } catch (IOException e) {
+                    System.err.println("Erro ao fechar socket: " + e.getMessage());
+               }
           }
      }
 */
+
      public void startServerNaveMae(){
           while (true) { 
               try {
