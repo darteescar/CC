@@ -15,7 +15,7 @@ public class NaveMae {
     private Map<String, InetAddress> roversIP;
     private Map<String, Integer> roversPorta;
 
-    //private final String id = "0000";
+    private final String id = "NaveMae";
     private InetAddress endIP;
     private int porta;
 
@@ -23,6 +23,8 @@ public class NaveMae {
 
     private MissionLink ml;
     private TelemetryStream ts;
+
+    /* ========== Construtor ========== */
 
     public NaveMae(InetAddress ip, int porta, Map<String, Estado> m1, Map<String, InetAddress> m2, Map<String, Integer> m3 ){
         this.setRoversEstado(m1);
@@ -108,6 +110,8 @@ public class NaveMae {
         return this.porta;
     }
 
+    /* ========== MÉTODOS PARA MANIPULAÇÃO DA QUEUE DE MISSÕES ========== */
+
     public void adicionarMissaoQueue(Missao m){
         this.queue.add(m);
     }
@@ -132,19 +136,39 @@ public class NaveMae {
         //Acabar
     }
 
+    /* ========== Método para iniciar a Nave Mãe ==========*/
+
     public void startNaveMae(){
         new Thread(() -> startServerTS() ).start();
         new Thread(() -> startMissionManager() ).start();
         //new Thread(() -> startAPI() ).start();
     }
 
+    /* ========== Métodos para iniciar os diferentes serviços da Nave Mãe ========== */
+
     public void startAPI(){
         //Acabar
     }
 
     public void startServerTS(){
-        this.ts.startServerNaveMae();
+        /* 
+        while(true){
+            Mensagem msg = this.receiveMessageTS();
+            new Thread(() -> {
+                if (msg != null && msg.getTipo() == TipoMensagem.TS_REPORT){
+                    String id_rover = msg.getIdOrg();
+                    byte[] payload = msg.getPayload();
+                    Estado novo = new Estado();
+                    novo.fromByteArray(payload); 
+                    this.atualizaEstadoRover(id_rover, novo);
+                    System.out.println("[NaveMae] Telemetria recebida do rover " + id_rover + " via TelemetryStream.");
+                } else {
+                    System.out.println("[NaveMae] Mensagem de tipo desconhecido recebida via TelemetryStream.");
+                }
+            }).start();
+        }
         //Acabar
+        */
     }
 
     public void startMissionManager(){
@@ -153,7 +177,7 @@ public class NaveMae {
             Mensagem msg = this.receiveMessageML();
             new Thread(() -> {
                 if (msg.getTipo() == TipoMensagem.ML_SYN && msg != null){
-                    sendSynAck(msg.getIdOrg(), msg.getIpOrg(), msg.getPortaOrg());
+                    sendMessageML(TipoMensagem.ML_SYNACK, new byte[0], msg.getIdOrg(), msg.getIpOrg(), msg.getPortaOrg());
                 } else if (msg.getTipo() == TipoMensagem.ML_REQUEST && msg != null){
                     processRequestML(msg);
                 } else if (msg.getTipo() == TipoMensagem.ML_CONFIRM && msg != null){
@@ -166,30 +190,25 @@ public class NaveMae {
         
     }
 
+    /* ========== Métodos relacionados ao MissionLink ========== */
+
     public void processRequestML(Mensagem msg){
-
-        if(msg != null && msg.getTipo() == TipoMensagem.ML_REQUEST){
-            String id_rover = msg.getIdOrg();
-            InetAddress ip_rover = msg.getIpOrg();
-            int porta_rover = msg.getPortaOrg();
-
             if (numeroMissaoNaQueue() == 0) {
                 this.reporMissoesQueue();
             }
 
             Missao m = this.queue.remove();
 
-            this.sendMissionToRover(m, id_rover, ip_rover, porta_rover);
-        }
-
-        //Receber confirmação?
-
+            sendMessageML(TipoMensagem.ML_DATA,
+                                m.toByteArray(), 
+                                msg.getIdOrg(), 
+                                msg.getIpOrg(), 
+                                msg.getPortaOrg());
     }
 
     public Mensagem receiveMessageML(){
         try {
             Mensagem msg_recebida = this.ml.receiveMensagem();
-            System.out.println("[NaveMae] Request de missão recebido via MissionLink.");
             return msg_recebida;
 
         } catch (Exception e) {
@@ -199,44 +218,34 @@ public class NaveMae {
         
     }
 
-    public void sendMissionToRover(Missao m, String id_rover, InetAddress ip_rover, int porta_rover){
+    public void sendMessageML(TipoMensagem tipo, byte[] data, String id_rover, InetAddress ip_rover, int porta_rover){
         try {
-            byte[] payload = m.toByteArray();
-            Mensagem msg_missao = new Mensagem(
-                TipoMensagem.ML_DATA,
-                "NaveMae",
-                this.endIP,
-                this.porta,
-                id_rover,
-                ip_rover,
-                porta_rover,
-                payload
-            );
-            this.ml.sendMensagem(msg_missao.toByteArray(), ip_rover, porta_rover);
-            System.out.println("[NaveMae] Missão enviada ao rover " + id_rover + " via MissionLink.");
-
-        } catch (Exception e) {
-            System.out.println("[ERRO] Falha ao enviar missão via MissionLink: " + e.getMessage());
-        }
-        
-    }
-
-    public void sendSynAck(String id_rover, InetAddress ip_rover, int porta_rover){
-        try {
-            Mensagem payload = new Mensagem(TipoMensagem.ML_SYNACK,
-                                                    "NaveMae",
-                                                    this.endIP,
-                                                    this.porta,
-                                                    id_rover,
-                                                    ip_rover,
-                                                    porta_rover,
-                                                    new byte[0]);
+            Mensagem payload = new Mensagem(tipo,
+                                    this.id, 
+                                    this.endIP, 
+                                    this.porta, 
+                                    id_rover, 
+                                    ip_rover, 
+                                    porta_rover, 
+                                    data);
             this.ml.sendMensagem(payload.toByteArray(), ip_rover, porta_rover);
-            System.out.println("[NaveMae] SYN ACK enviada ao rover " + id_rover + " via MissionLink.");
 
+            if (tipo == TipoMensagem.ML_SYNACK) {
+                System.out.println("[NaveMae] SYN ACK enviada ao rover " + id_rover + " via MissionLink.");
+            } else if (tipo == TipoMensagem.ML_DATA) {
+                System.out.println("[NaveMae] Missao enviada ao rover " + id_rover + " via MissionLink.");
+            }
         } catch (Exception e) {
-            System.out.println("[ERRO] Falha ao enviar confirmação SYN via MissionLink: " + e.getMessage());
+            System.out.println("[ERRO] Falha ao enviar mensagem via MissionLink: " + e.getMessage());
         }
     }
+
+    /* ========== Métodos relacionados ao TelemetryStream ========== */
+
+    /* 
+    public Mensagem receiveMessageTS(){
+        return this.ts.obterMensagemServidor();
+    }
+    */
 
 }
