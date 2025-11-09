@@ -154,25 +154,7 @@ public class NaveMae {
     }
 
     public void startServerTS(){
-        this.ts.startServerNaveMae();
-        /*
-        while(true){
-            Mensagem msg = this.receiveMessageTS();
-            new Thread(() -> {
-                if (msg != null && msg.getTipo() == TipoMensagem.TS_REPORT){
-                    String id_rover = msg.getIdOrg();
-                    byte[] payload = msg.getPayload();
-                    Estado novo = new Estado();
-                    novo.fromByteArray(payload); 
-                    this.atualizaEstadoRover(id_rover, novo);
-                    System.out.println("[NaveMae] Telemetria recebida do rover " + id_rover + " via TelemetryStream.");
-                } else {
-                    System.out.println("[NaveMae] Mensagem de tipo desconhecido recebida via TelemetryStream.");
-                }
-            }).start();
-        }
-        */
-        
+        this.ts.startServerNaveMae();   
     }
 
     public void startMissionManager(){
@@ -249,12 +231,5 @@ public class NaveMae {
     }
 
     /* ========== Métodos relacionados ao TelemetryStream ========== */
-
-    /*
-    public Mensagem receiveMessageTS(){
-        return this.ts.obterMensagemServidor();
-    }
-        */
-    
 
 }

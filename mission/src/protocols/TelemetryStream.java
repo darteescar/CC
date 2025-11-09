@@ -35,30 +35,6 @@ public class TelemetryStream {
                System.out.println("Erro ao conectar ao servidor na porta " + porta + " - " + e.getMessage() + "\n");
           }
      }
-/*
-     public Mensagem obterMensagemServidor() {
-          Socket clientSocket = null;
-          try {
-               clientSocket = serverSocket.accept();
-               DataInputStream dis = new DataInputStream(clientSocket.getInputStream());
-               int len = dis.readInt();
-               byte[] data = new byte[len];
-               dis.readFully(data);
-               return Mensagem.fromByteArray(data);
-          } catch (IOException e) {
-               System.err.println("Erro ao receber mensagem: " + e.getMessage());
-               return null;
-          } finally {
-               if (clientSocket != null) {
-                    try {
-                         clientSocket.close();
-                    } catch (IOException e) {
-                         System.err.println("Erro ao fechar socket: " + e.getMessage());
-                    }
-               }
-          }
-     }
-*/
 
      public void startServerNaveMae(){
           while (true) { 
