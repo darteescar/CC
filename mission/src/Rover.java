@@ -99,8 +99,7 @@ public class Rover {
 
             switch (estado) {
                 case EM_MISSAO:
-                    // NADA
-                    // Talvez meter o move() aqui no futuro
+                    move();
                     break;
                 case INOPERACIONAL:
                     // envia falha
@@ -193,29 +192,25 @@ public class Rover {
 
     public void move(){
         
-        while (true) {
-            EstadoOperacional estado_op = this.getEstado().getEstadoOperacional();
+        EstadoOperacional estado_op = this.getEstado().getEstadoOperacional();
             
-            if (estado_op == EstadoOperacional.EM_MISSAO) {
-                // Executa a missão atual: espera pela duração e atualiza o estado para PARADO.
-                Missao m = this.missao_atual;
-                //if (m == null) return;
+        if (estado_op == EstadoOperacional.EM_MISSAO) {
+            // Executa a missão atual: espera pela duração e atualiza o estado para PARADO.
+            Missao m = this.missao_atual;
+            if (m == null) return;
 
-                //if (this.estado.getEstadoOperacional() != EstadoOperacional.EM_MISSAO) return;
+            long durationMs = (long) m.getDuracao() * 60 * 1000L; // interpreta duracao como minutos
+            long endTime = System.currentTimeMillis() + Math.max(0, durationMs);
 
-                long durationMs = (long) m.getDuracao() * 60 * 1000L; // interpreta duracao como minutos
-                long endTime = System.currentTimeMillis() + Math.max(0, durationMs);
+            System.out.println("\n[Rover] Iniciando missão id=" + m.getId() + ", duração=" + m.getDuracao() + " (minutos)");
 
-                System.out.println("\n[Rover] Iniciando missão id=" + m.getId() + ", duração=" + m.getDuracao() + " (minutos)");
-
-                while (System.currentTimeMillis() < endTime) {
-                    //Relaizar missao
-                }
-
-                // Missão concluída
-                this.estado.setEstadoOperacional(EstadoOperacional.PARADO);
-                System.out.println("[Rover] Missão concluída. Estado atualizado para PARADO.\n");
+            while (System.currentTimeMillis() < endTime) {
+                //Relaizar missao
             }
+
+            // Missão concluída
+            this.estado.setEstadoOperacional(EstadoOperacional.PARADO);
+            System.out.println("[Rover] Missão concluída. Estado atualizado para PARADO.\n");
         }
     }
 
