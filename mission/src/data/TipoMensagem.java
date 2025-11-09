@@ -3,7 +3,7 @@ package data;
 public enum TipoMensagem {
     ML_SYN((byte)1),
     ML_SYNACK((byte)2),
-    ML_GET((byte)3),
+    ML_REQUEST((byte)3),
     ML_DATA((byte)4),
     ML_CONFIRM((byte)5),
     ML_ACK((byte)6),
