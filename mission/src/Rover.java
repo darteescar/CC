@@ -44,10 +44,10 @@ public class Rover {
 
             System.out.println("[Rover] " + id + " inicializado.");
             System.out.println(" - Escutando missões UDP na porta " + porta);
-            System.out.println(" - Telemetria TCP conectada à nave-mãe em " + ip_NaveMae + ":" + porta_NaveMae);
+            System.out.println(" - Telemetria TCP conectada à nave-mãe em " + ip_NaveMae + ":" + porta_NaveMae + "\n");
 
         } catch (Exception e) {
-            System.out.println("[ERRO] Falha ao iniciar Rover: " + e.getMessage());
+            System.out.println("[ERRO] Falha ao iniciar Rover: " + e.getMessage() + "\n");
         }
     }
 
@@ -132,7 +132,9 @@ public class Rover {
                 System.out.println("[ERRO] Three-way handshake falhou: tipo de mensagem inesperado.");
                 return false;
             }
-            //sendMessageNaveMaeML(TipoMensagem.ML_ACK, new byte[0]);
+            System.out.println("[Rover] SYN ACK recebida da nave-mãe via MissionLink.");
+
+            sendMessageNaveMaeML(TipoMensagem.ML_ACK, new byte[0]);
             System.out.println("[Rover] Three-way handshake via MissionLink concluído com sucesso.");
 
         } catch (Exception e) {
@@ -153,8 +155,9 @@ public class Rover {
             missao.fromByteArray(payload);
             System.out.println("[Rover] Missão recebida via MissionLink.");
 
-            this.estado.setEstadoOperacional(EstadoOperacional.EM_MISSAO);
-            sendMessageNaveMaeML(TipoMensagem.ML_CONFIRM, new byte[0]); 
+            sendMessageNaveMaeML(TipoMensagem.ML_CONFIRM, new byte[0]);
+
+            this.estado.setEstadoOperacional(EstadoOperacional.EM_MISSAO); 
 
         } catch (Exception e) {
             System.out.println("[ERRO] Falha ao receber mensagem via MissionLink: " + e.getMessage());
@@ -189,19 +192,29 @@ public class Rover {
     }
 
     public void move(){
-        // Temporário
+        
         while (true) {
             EstadoOperacional estado_op = this.getEstado().getEstadoOperacional();
             
-
             if (estado_op == EstadoOperacional.EM_MISSAO) {
-                try {
-                    Thread.sleep(1000*10); // simula o tempo a executar a missão
-                    this.estado.setEstadoOperacional(EstadoOperacional.PARADO);
-                    System.out.println("[Rover] Missão concluída. Estado atualizado para PARADO.\n");
-                } catch (InterruptedException e) {
-                    System.out.println("[ERRO] Interrupção durante a execução da missão: " + e.getMessage());
+                // Executa a missão atual: espera pela duração e atualiza o estado para PARADO.
+                Missao m = this.missao_atual;
+                //if (m == null) return;
+
+                //if (this.estado.getEstadoOperacional() != EstadoOperacional.EM_MISSAO) return;
+
+                long durationMs = (long) m.getDuracao() * 60 * 1000L; // interpreta duracao como minutos
+                long endTime = System.currentTimeMillis() + Math.max(0, durationMs);
+
+                System.out.println("\n[Rover] Iniciando missão id=" + m.getId() + ", duração=" + m.getDuracao() + " (minutos)");
+
+                while (System.currentTimeMillis() < endTime) {
+                    //Relaizar missao
                 }
+
+                // Missão concluída
+                this.estado.setEstadoOperacional(EstadoOperacional.PARADO);
+                System.out.println("[Rover] Missão concluída. Estado atualizado para PARADO.\n");
             }
         }
     }

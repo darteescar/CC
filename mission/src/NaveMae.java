@@ -44,7 +44,7 @@ public class NaveMae {
 
             System.out.println("[Nave Mãe] inicializada.");
             System.out.println(" - Escutando requests UDP na porta " + porta);
-            System.out.println(" - Escutando telemetria TCP na porta " + porta);
+            System.out.println(" - Escutando telemetria TCP na porta " + porta + "\n");
 
         } catch (Exception e) {
             System.out.println("[ERRO] Falha ao iniciar Nave Mãe: " + e.getMessage());
@@ -181,13 +181,17 @@ public class NaveMae {
             Mensagem msg = this.receiveMessageML();
             new Thread(() -> {
                 if (msg.getTipo() == TipoMensagem.ML_SYN && msg != null){
+                    System.out.println("[NaveMae] SYN recebida do rover " + msg.getIdOrg() + " via MissionLink.");
                     sendMessageML(TipoMensagem.ML_SYNACK, new byte[0], msg.getIdOrg(), msg.getIpOrg(), msg.getPortaOrg());
-                } else if (msg.getTipo() == TipoMensagem.ML_REQUEST && msg != null){
+                } else if (msg.getTipo() == TipoMensagem.ML_ACK && msg != null){
+                    System.out.println("[NaveMae] ACK recebida do rover " + msg.getIdOrg() + " via MissionLink.");
+                }else if (msg.getTipo() == TipoMensagem.ML_REQUEST && msg != null){
+                    System.out.println("[NaveMae] Request de missão recebida do rover " + msg.getIdOrg() + " via MissionLink.");
                     processRequestML(msg);
                 } else if (msg.getTipo() == TipoMensagem.ML_CONFIRM && msg != null){
                     System.out.println("[NaveMae] Confirmação de receção de missão recebida do rover " + msg.getIdOrg() + " via MissionLink.");
                 } else {
-                    System.out.println("[NaveMae] Mensagem de tipo desconhecido recebida via MissionLink.");
+                    System.out.println("[NaveMae] Mensagem de tipo desconhecido recebida do rover " + msg.getIdOrg() + " via MissionLink.");
                 }
             }).start();       
         }

@@ -18,9 +18,9 @@ public class TelemetryStream {
      public TelemetryStream(int porta) {
           try {
                this.serverSocket = new ServerSocket(porta);
-               System.out.println("Aguardando conexão na porta " + porta + "...");
+               System.out.println("Aguardando conexão na porta " + porta + "..." + "\n");
           } catch (IOException e) {
-               System.out.println("Erro ao abrir a porta " + porta + " - " + e.getMessage());
+               System.out.println("Erro ao abrir a porta " + porta + " - " + e.getMessage() + "\n");
           }
      }
 
@@ -28,11 +28,11 @@ public class TelemetryStream {
      public TelemetryStream(InetAddress ip, int porta) {
           try {
                this.socket = new Socket(ip, porta);
-               System.out.println("Conectado ao servidor na porta " + porta + "...");   
+               System.out.println("Conectado ao servidor na porta " + porta + "..." + "\n");   
           } catch (UnknownHostException e) {
-               System.out.println("Erro: Endereço IP desconhecido - " + e.getMessage());
+               System.out.println("Erro: Endereço IP desconhecido - " + e.getMessage() + "\n");
           } catch (IOException e) {
-               System.out.println("Erro ao conectar ao servidor na porta " + porta + " - " + e.getMessage());
+               System.out.println("Erro ao conectar ao servidor na porta " + porta + " - " + e.getMessage() + "\n");
           }
      }
 /*
@@ -75,7 +75,6 @@ public class TelemetryStream {
 
      public void handleClient(Socket clientSocket) {
           try (DataInputStream dis = new DataInputStream(clientSocket.getInputStream())) {
-               System.out.println();
                while (true) {
                     int length;
                     try {
@@ -107,7 +106,6 @@ public class TelemetryStream {
           } finally {
                try {
                     clientSocket.close();
-                    System.out.println();
                } catch (IOException e) {
                     System.err.println("Erro ao fechar socket: " + e.getMessage());
                }
