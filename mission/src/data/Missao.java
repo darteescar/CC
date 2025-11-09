@@ -109,7 +109,7 @@ public class Missao implements Codificavel, Comparable<Missao>{
             return baos.toByteArray();
         }
         catch (IOException e) {
-            System.err.println("Erro ao converter Missão para byte array: " + e.getMessage());
+            System.err.println("[ERRO] Converter Missão para ByteArray: " + e.getMessage());
             return null;
         }
     }
@@ -134,7 +134,7 @@ public class Missao implements Codificavel, Comparable<Missao>{
             this.freq_update = dis.readInt();
             
         } catch (IOException e) {
-            System.err.println("Erro ao converter byte array para Missão: " + e.getMessage());
+            System.err.println("[ERRO] Converter ByteArray para Missão: " + e.getMessage());
         }
     }
 

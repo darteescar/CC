@@ -24,6 +24,6 @@ public enum TipoMensagem {
             if(t.codigo == codigo)
                 return t;
         }
-        throw new IllegalArgumentException("Codigo inválido: " + codigo);
+        throw new IllegalArgumentException("[ERRO] Codigo inválido: " + codigo);
     }
 }
