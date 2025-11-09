@@ -1,4 +1,4 @@
-package protocols;
+package protocols.udp;
 
 import data.Estado;
 import data.Mensagem;
