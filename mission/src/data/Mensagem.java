@@ -13,7 +13,8 @@ public class Mensagem implements Serializable {
     private InetAddress ip_dest;
     private int porta_dest;
     private byte[] payload;
-    private int seqNumber;
+
+    /* ====== Construtor ====== */
 
     public Mensagem(TipoMensagem tm, String id_org, InetAddress ip_org, int porta_org,
                     String id_dest, InetAddress ip_dest, int porta_dest, byte[] payload) {
@@ -25,16 +26,9 @@ public class Mensagem implements Serializable {
         this.ip_dest = ip_dest;
         this.porta_dest = porta_dest;
         this.payload = payload;
-        this.seqNumber = 0;
     }
 
-    public Mensagem(TipoMensagem tm, String id_org, InetAddress ip_org, int porta_org,
-                    String id_dest, InetAddress ip_dest, int porta_dest, byte[] payload, int seqNumber) {
-        this(tm, id_org, ip_org, porta_org, id_dest, ip_dest, porta_dest, payload);
-        this.seqNumber = seqNumber;
-    }
-
-    // Getters
+    /* ====== Getters & Setters ====== */
     public TipoMensagem getTipo() { 
         return tm; 
     }
@@ -67,9 +61,7 @@ public class Mensagem implements Serializable {
         return payload; 
     }
 
-    public int getSeqNumber() { 
-        return seqNumber; 
-    }
+    /* ====== Métodos ====== */
 
     @Override
     public String toString() {
@@ -82,7 +74,6 @@ public class Mensagem implements Serializable {
                 ", ip_dest=" + ip_dest.getHostAddress() +
                 ", porta_dest=" + porta_dest +
                 ", payload_length=" + payload.length +
-                ", seqNumber=" + seqNumber +
                 '}';
         
     }
@@ -95,12 +86,9 @@ public class Mensagem implements Serializable {
         // Tipo da mensagem (1 byte)
         dos.writeByte(tm.ordinal());
 
-        // Número de sequência (4 bytes)
-        dos.writeInt(seqNumber);
-
         // IDs (strings com tamanho prefixado)
-        writeString(dos, id_org);
-        writeString(dos, id_dest);
+        Mensagem.writeString(dos, id_org);
+        Mensagem.writeString(dos, id_dest);
 
         // Endereços e portas
         dos.write(ip_org.getAddress());
@@ -121,7 +109,6 @@ public class Mensagem implements Serializable {
         DataInputStream dis = new DataInputStream(new ByteArrayInputStream(bytes));
 
         TipoMensagem tm = TipoMensagem.values()[dis.readByte()];
-        int seqNumber = dis.readInt();
 
         String id_org = readString(dis);
         String id_dest = readString(dis);
@@ -140,12 +127,10 @@ public class Mensagem implements Serializable {
         byte[] payload = new byte[payloadLen];
         dis.readFully(payload);
 
-        return new Mensagem(tm, id_org, ip_org, porta_org, id_dest, ip_dest, porta_dest, payload, seqNumber);
+        return new Mensagem(tm, id_org, ip_org, porta_org, id_dest, ip_dest, porta_dest, payload);
     }
 
-    /* ==================================================
-       Métodos auxiliares
-       ================================================== */
+    /* ======= Métodos Auxiliares ======= */
 
     private static void writeString(DataOutputStream dos, String s) throws IOException {
         byte[] data = s.getBytes(StandardCharsets.UTF_8);

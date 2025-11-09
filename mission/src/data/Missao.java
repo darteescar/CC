@@ -17,6 +17,8 @@ public class Missao implements Codificavel, Comparable<Missao>{
     private int duracao; // em minutos
     private int freq_update;
 
+    /* ====== Construtores ====== */
+
     public Missao(){
         this.id = 0;
         this.x1 = 0;
@@ -25,14 +27,7 @@ public class Missao implements Codificavel, Comparable<Missao>{
         this.y2 = 0;
         this.tarefa = "";
         this.duracao = 0;
-        this.freq_update = 1000;
-    }
-
-    @Override
-    public int compareTo(Missao other) {
-        // Ordenação por id ascendente (IDs mais baixos têm maior prioridade).
-        // Ajusta aqui se preferires outra política (e.g., duração, área, etc.).
-        return Integer.compare(this.id, other.id);
+        this.freq_update = 0;
     }
 
     public Missao(int id, double x1, double y1, double x2, double y2, String tarefa, int duracao, int freq_update){
@@ -56,6 +51,8 @@ public class Missao implements Codificavel, Comparable<Missao>{
         this.duracao = m.getDuracao();
         this.freq_update = m.getFreqUpdate();
     }
+
+    /* ====== Getters & Setters ====== */
 
     public int getId(){
         return this.id;
@@ -88,6 +85,8 @@ public class Missao implements Codificavel, Comparable<Missao>{
     public int getFreqUpdate(){
         return this.freq_update;
     }
+
+    /* Métodos */
 
     @Override
     public byte[] toByteArray() {
@@ -156,5 +155,12 @@ public class Missao implements Codificavel, Comparable<Missao>{
                 ", duracao=" + duracao +
                 ", freq_update=" + freq_update +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Missao other) {
+        // Ordenação por id ascendente (IDs mais baixos têm maior prioridade).
+        // Ajusta aqui se preferires outra política (e.g., duração, área, etc.).
+        return Integer.compare(this.id, other.id);
     }
 }
