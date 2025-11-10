@@ -44,7 +44,9 @@ public class EnvioML {
                                 
         DatagramPacket pacote = new DatagramPacket(mensagem, mensagem.length, ip, porta);
         socket.send(pacote);
-        pendentes.put(chave, new MensagemPendente(mensagem, ip, porta));
+        if(chave != null){ 
+            pendentes.put(chave, new MensagemPendente(mensagem, ip, porta));
+        }
     }
 
     public void confirmarRecebimento(String chave) {
@@ -57,15 +59,15 @@ public class EnvioML {
                 try {
                     for (Map.Entry<String, MensagemPendente> e : pendentes.entrySet()) {
                         MensagemPendente p = e.getValue();
-                        long elapsed = System.currentTimeMillis() - p.momentoEnvio;
-                        if (elapsed > TIMEOUT) {
+                        long tempoPassado = System.currentTimeMillis() - p.momentoEnvio;
+                        if (tempoPassado > TIMEOUT) {
                             System.out.println("[ENVIO - ML] TIMEOUT -> Retransmitindo " + e.getKey());
                             DatagramPacket pacote = new DatagramPacket(p.data, p.data.length, p.dest, p.port);
                             socket.send(pacote);
                             p.momentoEnvio = System.currentTimeMillis();
                         }
                     }
-                    Thread.sleep(500); // verificação periódica
+                    Thread.sleep(100); // verificação periódica
                 } catch (Exception ignored) {}
             }
         }, "Thread - Envio ML");

@@ -74,13 +74,13 @@ public class MissionLinkNM {
                         envioML.sendMensagem(mSYNACK.toByteArray(), 
                                             ip_dest, 
                                             porta_dest,
-                                            idRover + "_SYN"
+                                            idRover + "_SYNACK"
                         );
                     }
 
                     case ML_REQUEST -> {
                         // Confirma o SYNACK (parar retransmissão)
-                        envioML.confirmarRecebimento(idRover + "_SYN");
+                        envioML.confirmarRecebimento(idRover + "_SYNACK");
 
                         System.out.println("[NaveMae - ML] REQUEST de: " + idRover);
 
@@ -99,12 +99,13 @@ public class MissionLinkNM {
                         envioML.sendMensagem(mDATA.toByteArray(), 
                                             ip_dest, 
                                             porta_dest,
-                                            idRover + "_REQ"
+                                            idRover + "_DATA"
                         );
                     }
 
                     case ML_CONFIRM -> {
-                        envioML.confirmarRecebimento(idRover + "_REQ");
+                        // Confirma o DATA(parar retransmissão)
+                        envioML.confirmarRecebimento(idRover + "_DATA");
                         System.out.println("[NaveMae - ML] CONFIRM de: " + idRover);
                     }
 
