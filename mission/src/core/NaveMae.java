@@ -90,6 +90,10 @@ public class NaveMae {
         System.out.println("[NaveMae] Todos os serviços foram conectados");
     }
 
+    public void atualizaEstado(){
+
+    }
+
     public static void main(String[] args) {
         if(args.length < 2){
             System.out.println("[Uso] java MainNaveMae @ip");
@@ -98,6 +102,16 @@ public class NaveMae {
         try{
             InetAddress ip = InetAddress.getByName(args[1]);
             NaveMae naveMae = new NaveMae(ip);
+
+
+            Missao m1 = new Missao(100, 1, 2, 3, 4, "Andar", 1, 30);
+            Missao m2 = new Missao(101, 5, 6, 7, 8, "Coletar", 2, 30);
+            Missao m3 = new Missao(102, 9, 10, 11, 12, "Analisar", 3, 30);
+
+            naveMae.queue.add(m1);
+            naveMae.queue.add(m2);
+            naveMae.queue.add(m3);
+
             naveMae.startNaveMae();
 
         }catch(UnknownHostException e){

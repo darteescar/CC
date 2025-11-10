@@ -15,7 +15,7 @@ public class Missao implements Codificavel, Comparable<Missao>{
     private double y2;
     private String tarefa;
     private int duracao; // em minutos
-    private int freq_update;
+    private int freq_update; // em segundos
 
     /* ====== Construtores ====== */
 

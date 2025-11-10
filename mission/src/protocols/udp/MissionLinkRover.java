@@ -27,7 +27,7 @@ public class MissionLinkRover {
         this.envioML = new EnvioML(socket);
         this.ipNaveMae = ipNaveMae;
         this.portaNaveMae = portaNaveMae;
-        System.out.println("[" + idRover + " - ML]: À escuta na porta: " + porta);
+        System.out.println("[" + idRover + " - ML]: Conectado na porta: " + porta);
     }
 
     public Mensagem receiveMensagem() throws IOException {
@@ -119,7 +119,7 @@ public class MissionLinkRover {
                             
                             if(idMisaoRecebida != ultimaMissao){
                                 this.ultimaMissao = idMisaoRecebida;
-                                // TODO: executar missao
+                                rover.executaMissao(missao);
                             }
                         }
 

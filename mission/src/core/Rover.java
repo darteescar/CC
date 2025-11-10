@@ -42,7 +42,7 @@ public class Rover {
 
         try {
             this.ml = new MissionLinkRover(id, porta, ip_NaveMae, portaUDPNaveMae);
-            //this.ts = new TelemetryStreamRover(); 
+            this.ts = new TelemetryStreamRover(id, porta, ip); 
 
         } catch (Exception e) {
             System.out.println("[ERRO] Falha ao iniciar " + id + ": " + e.getMessage());
@@ -87,10 +87,10 @@ public class Rover {
 
     public void startRover(){
         this.ml.startMLRover(this);
-        //this.ts.startTSRover(this);
+        this.ts.startTSRover(this);
     }
 
-    public void executarMissao(Missao missao){
+    public void executaMissao(Missao missao){
         // TODO metodo temporario -> da print a missao
         try{
             missao.toString();
