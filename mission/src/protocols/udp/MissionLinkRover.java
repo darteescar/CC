@@ -20,12 +20,12 @@ public class MissionLinkRover {
     private int ultimaMissao = -1;
 
     /* ====== Construtor ====== */
-    public MissionLinkRover(String idRover, int porta, String ipNaveMae, int portaNaveMae) throws Exception {
+    public MissionLinkRover(String idRover, int porta, InetAddress ipNaveMae, int portaNaveMae) throws Exception {
         this.idRover = idRover;
         this.porta = porta;
         this.socket = new DatagramSocket(porta);
         this.envioML = new EnvioML(socket);
-        this.ipNaveMae = InetAddress.getByName(ipNaveMae);
+        this.ipNaveMae = ipNaveMae;
         this.portaNaveMae = portaNaveMae;
         System.out.println("[" + idRover + " - ML]: À escuta na porta: " + porta);
     }
