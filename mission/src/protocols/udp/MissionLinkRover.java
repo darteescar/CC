@@ -104,13 +104,13 @@ public class MissionLinkRover {
                                                             this.porta, 
                                                             "NaveMae", 
                                                             this.ipNaveMae, 
-                                                            this.porta, 
+                                                            this.portaNaveMae, 
                                                             null);
 
                             // Envia CONFIRM e não espera por nada
                             envioML.sendMensagem(mCONFIRM.toByteArray(), 
                                                 this.ipNaveMae, 
-                                                this.porta, 
+                                                this.portaNaveMae, 
                                                 null);
 
                             Missao missao = new Missao();
