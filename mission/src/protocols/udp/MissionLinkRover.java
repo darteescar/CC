@@ -48,6 +48,7 @@ public class MissionLinkRover {
             try {
                 if (rover.getEstado().getEstadoOperacional() == EstadoOperacional.PARADO) {
                     System.out.println("[" + idRover + " - ML]: Estado PARADO → solicitar missão...");
+                    rover.getEstado().setEstadoOperacional(EstadoOperacional.ESPERA_MISSAO);
 
                     Mensagem mSYN = new Mensagem(
                             TipoMensagem.ML_SYN,
@@ -128,10 +129,12 @@ public class MissionLinkRover {
 
                 } catch (SocketTimeoutException e) {
                     System.out.println("[ERRO " + idRover + " - ML] Problema no switch: " + e.getMessage());
+                    e.printStackTrace();
                 }
 
             } catch (Exception e) {
                 System.out.println("[ERRO " + idRover + " - ML] Handler: " + e.getMessage());
+                e.printStackTrace();
             }
         }
     }

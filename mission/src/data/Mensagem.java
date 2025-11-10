@@ -25,7 +25,7 @@ public class Mensagem implements Serializable {
         this.id_dest = id_dest;
         this.ip_dest = ip_dest;
         this.porta_dest = porta_dest;
-        this.payload = payload;
+        this.payload = (payload != null) ? payload : new byte[0];
     }
 
     /* ====== Getters & Setters ====== */

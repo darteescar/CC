@@ -110,6 +110,7 @@ public class Missao implements Codificavel, Comparable<Missao>{
         }
         catch (IOException e) {
             System.err.println("[ERRO] Converter Missão para ByteArray: " + e.getMessage());
+            e.printStackTrace();
             return null;
         }
     }
@@ -135,6 +136,7 @@ public class Missao implements Codificavel, Comparable<Missao>{
             
         } catch (IOException e) {
             System.err.println("[ERRO] Converter ByteArray para Missão: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

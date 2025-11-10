@@ -4,9 +4,10 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import data.Estado;
+import data.EstadoOperacional;
 import data.Missao;
 import protocols.udp.MissionLinkRover;
-import protocols.tcp.TelemetryStreamRover;
+//import protocols.tcp.TelemetryStreamRover;
 
 public class Rover {
     // Identificação do Rover
@@ -23,7 +24,7 @@ public class Rover {
 
     // Protocolos
     private MissionLinkRover ml;
-    private TelemetryStreamRover ts;
+    //private TelemetryStreamRover ts;
 
     /* ========== Construtor ========== */
 
@@ -42,10 +43,11 @@ public class Rover {
 
         try {
             this.ml = new MissionLinkRover(id, porta, ip_NaveMae, portaUDPNaveMae);
-            this.ts = new TelemetryStreamRover(id, porta, ip); 
+            //this.ts = new TelemetryStreamRover(id, porta, ip); 
 
         } catch (Exception e) {
             System.out.println("[ERRO] Falha ao iniciar " + id + ": " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -87,30 +89,31 @@ public class Rover {
 
     public void startRover(){
         this.ml.startMLRover(this);
-        this.ts.startTSRover(this);
+        //this.ts.startTSRover(this);
     }
 
     public void executaMissao(Missao missao){
         // TODO metodo temporario -> da print a missao
         try{
-            missao.toString();
-            Thread.sleep(60*1000);
+            System.out.println(missao.toString());
+            Thread.sleep(15*1000);
+            this.estado.setEstadoOperacional(EstadoOperacional.PARADO);
         }catch(InterruptedException e){
             System.out.println("executar missao");
         }
     }
 
     public static void main(String[] args) {
-    if(args.length < 5){
-        System.out.println("Uso: java MainRover @id_rover @ip_rover @porta_rover @ip_nave_mae");
+    if(args.length < 4){
+        System.out.println("Uso: java MainRover <id_rover> <ip_rover> <porta_rover> <ip_nave_mae>");
         return;
     }
 
     try{
-        String id = args[1];
-        InetAddress ip = InetAddress.getByName(args[2]);
-        int porta = Integer.parseInt(args[3]);
-        InetAddress ip_NaveMae = InetAddress.getByName(args[4]);
+        String id = args[0];
+        InetAddress ip = InetAddress.getByName(args[1]);
+        int porta = Integer.parseInt(args[2]);
+        InetAddress ip_NaveMae = InetAddress.getByName(args[3]);
 
         Rover rover = new Rover(id, ip, porta, ip_NaveMae);
         rover.startRover();

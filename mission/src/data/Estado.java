@@ -101,6 +101,7 @@ public class Estado implements Codificavel{
             return baos.toByteArray();
         } catch (IOException e) {
             System.err.println("[ERRO] Converter Estado para ByteArray: " + e.getMessage());
+            e.printStackTrace();
             return null;
         }
     }
@@ -118,6 +119,7 @@ public class Estado implements Codificavel{
             this.velocidade = dis.readFloat();
         } catch (IOException e) {
             System.err.println("[ERRO] Converter ByteArray para Estado: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

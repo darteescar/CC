@@ -114,6 +114,7 @@ public class MissionLinkNM {
 
             } catch (Exception e) {
                 System.out.println("[ERRO NaveMae - ML] Handler: " + e.getMessage());
+                e.printStackTrace();
             }
         }
     }

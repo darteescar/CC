@@ -2,10 +2,11 @@ package core;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 import data.*;
-import protocols.tcp.TelemetryStreamNM;
+//import protocols.tcp.TelemetryStreamNM;
 import protocols.udp.MissionLinkNM;
 
 import java.net.InetAddress;
@@ -17,7 +18,7 @@ public class NaveMae {
     private Map<String, InetAddress> roversIP;
     private Map<String, Integer> roversPorta;
 
-    private Queue<Missao> queue;
+    private final BlockingQueue<Missao> queue;
 
     private final String id = "NaveMae";
     private final int portaUDP = 5000;
@@ -25,14 +26,14 @@ public class NaveMae {
     private final InetAddress ip;
 
     private MissionLinkNM ml;
-    private TelemetryStreamNM ts;
+    //private TelemetryStreamNM ts;
 
     /* ========== Construtor ========== */
 
     public NaveMae(InetAddress ip){
         this.ip = ip;
 
-        this.queue = new PriorityQueue<Missao>();
+        this.queue = new LinkedBlockingQueue<Missao>();
 
         this.roversEstado = new HashMap<>();
         this.roversIP = new HashMap<>();
@@ -40,10 +41,11 @@ public class NaveMae {
 
         try {
             this.ml = new MissionLinkNM(this.portaUDP);
-            this.ts = new TelemetryStreamNM(this.portaTCP);
+            //this.ts = new TelemetryStreamNM(this.portaTCP);
 
         } catch (Exception e) {
             System.out.println("[ERRO] Falha ao inicializar NaveMae: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -80,13 +82,13 @@ public class NaveMae {
         System.out.println("[NaveMae] Novo rover adicionado: " + id);
     }
 
-    public Missao getMissaoQueue(){
-        return this.queue.poll();
+    public Missao getMissaoQueue() throws InterruptedException{
+        return this.queue.take();
     }
 
     public void startNaveMae(){
         this.ml.startMLNaveMae(this);
-        this.ts.startTLNaveMae(this);
+        //this.ts.startTLNaveMae(this);
         System.out.println("[NaveMae] Todos os serviços foram conectados");
     }
 
@@ -95,12 +97,12 @@ public class NaveMae {
     }
 
     public static void main(String[] args) {
-        if(args.length < 2){
-            System.out.println("[Uso] java MainNaveMae @ip");
+        if(args.length < 1){
+            System.out.println("[Uso] java MainNaveMae <ip>");
             return;
         }
         try{
-            InetAddress ip = InetAddress.getByName(args[1]);
+            InetAddress ip = InetAddress.getByName(args[0]);
             NaveMae naveMae = new NaveMae(ip);
 
 
@@ -116,6 +118,7 @@ public class NaveMae {
 
         }catch(UnknownHostException e){
             System.out.println("[NaveMae - ERRO]: problema com IP: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }
