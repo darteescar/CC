@@ -87,9 +87,9 @@ public class NaveMae {
     }
 
     public void startNaveMae(){
-        this.ml.startMLNaveMae(this);
+        new Thread(() -> this.ml.startMLNaveMae(this)).start();
         //this.ts.startTLNaveMae(this);
-        System.out.println("[NaveMae] Todos os serviços foram conectados");
+        System.out.println("[NaveMae] Todos os serviços foram conectados\n");
     }
 
     public void atualizaEstado(){
@@ -98,7 +98,7 @@ public class NaveMae {
 
     public static void main(String[] args) {
         if(args.length < 1){
-            System.out.println("[Uso] java MainNaveMae <ip>");
+            System.out.println("[Uso] java NaveMae <ip>");
             return;
         }
         try{
