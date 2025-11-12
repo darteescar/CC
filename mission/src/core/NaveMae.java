@@ -1,9 +1,9 @@
 package core;
 
 import java.util.Map;
-import java.util.HashMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 
 import data.*;
 //import protocols.tcp.TelemetryStreamNM;
@@ -35,9 +35,9 @@ public class NaveMae {
 
         this.queue = new LinkedBlockingQueue<Missao>();
 
-        this.roversEstado = new HashMap<>();
-        this.roversIP = new HashMap<>();
-        this.roversPorta = new HashMap<>();
+        this.roversEstado = new ConcurrentHashMap<>();
+        this.roversIP = new ConcurrentHashMap<>();
+        this.roversPorta = new ConcurrentHashMap<>();
 
         try {
             this.ml = new MissionLinkNM(this.portaUDP);
