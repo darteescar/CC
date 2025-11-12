@@ -15,7 +15,9 @@ public class Missao implements Codificavel, Comparable<Missao>{
     private double y2;
     private String tarefa;
     private int duracao; // em minutos
-    private int freq_update;
+    private int freq_update; // em segundos
+
+    /* ====== Construtores ====== */
 
     public Missao(){
         this.id = 0;
@@ -25,14 +27,7 @@ public class Missao implements Codificavel, Comparable<Missao>{
         this.y2 = 0;
         this.tarefa = "";
         this.duracao = 0;
-        this.freq_update = 1000;
-    }
-
-    @Override
-    public int compareTo(Missao other) {
-        // Ordenação por id ascendente (IDs mais baixos têm maior prioridade).
-        // Ajusta aqui se preferires outra política (e.g., duração, área, etc.).
-        return Integer.compare(this.id, other.id);
+        this.freq_update = 0;
     }
 
     public Missao(int id, double x1, double y1, double x2, double y2, String tarefa, int duracao, int freq_update){
@@ -56,6 +51,8 @@ public class Missao implements Codificavel, Comparable<Missao>{
         this.duracao = m.getDuracao();
         this.freq_update = m.getFreqUpdate();
     }
+
+    /* ====== Getters & Setters ====== */
 
     public int getId(){
         return this.id;
@@ -89,6 +86,8 @@ public class Missao implements Codificavel, Comparable<Missao>{
         return this.freq_update;
     }
 
+    /* Métodos */
+
     @Override
     public byte[] toByteArray() {
         try {
@@ -110,7 +109,8 @@ public class Missao implements Codificavel, Comparable<Missao>{
             return baos.toByteArray();
         }
         catch (IOException e) {
-            System.err.println("Erro ao converter Missão para byte array: " + e.getMessage());
+            System.err.println("[ERRO] Converter Missão para ByteArray: " + e.getMessage());
+            e.printStackTrace();
             return null;
         }
     }
@@ -135,7 +135,8 @@ public class Missao implements Codificavel, Comparable<Missao>{
             this.freq_update = dis.readInt();
             
         } catch (IOException e) {
-            System.err.println("Erro ao converter byte array para Missão: " + e.getMessage());
+            System.err.println("[ERRO] Converter ByteArray para Missão: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -156,5 +157,12 @@ public class Missao implements Codificavel, Comparable<Missao>{
                 ", duracao=" + duracao +
                 ", freq_update=" + freq_update +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Missao other) {
+        // Ordenação por id ascendente (IDs mais baixos têm maior prioridade).
+        // Ajusta aqui se preferires outra política (e.g., duração, área, etc.).
+        return Integer.compare(this.id, other.id);
     }
 }

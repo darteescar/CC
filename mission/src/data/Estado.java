@@ -8,13 +8,16 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class Estado implements Codificavel{
-    private double x;
-    private double y;
+    private double x; // Coordenadas
+    private double y; // Coordenada
+
     // volatile garante visibilidade das alterações entre threads sem sincronização
     private volatile EstadoOperacional estado_operacional;
     private int bateria;
     private float velocidade; // em Km/h
 
+    /* ====== Construtores ====== */
+    
     public Estado(){
         this.x = 0;
         this.y = 0;
@@ -38,6 +41,8 @@ public class Estado implements Codificavel{
         this.bateria = e.getBateria();
         this.velocidade = e.getVelocidade();
     }   
+
+    /* ====== Getters & Setters ====== */
 
     public double getX(){
         return this.x;
@@ -79,6 +84,8 @@ public class Estado implements Codificavel{
         this.velocidade = velocidade;
     }
 
+    /* ====== Métodos ====== */
+
     public byte[] toByteArray() {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -93,7 +100,8 @@ public class Estado implements Codificavel{
             dos.flush();
             return baos.toByteArray();
         } catch (IOException e) {
-            System.err.println("Erro ao converter Estado para byte array: " + e.getMessage());
+            System.err.println("[ERRO] Converter Estado para ByteArray: " + e.getMessage());
+            e.printStackTrace();
             return null;
         }
     }
@@ -110,8 +118,20 @@ public class Estado implements Codificavel{
             this.bateria = dis.readInt();
             this.velocidade = dis.readFloat();
         } catch (IOException e) {
-            System.err.println("Erro ao converter byte array para Estado: " + e.getMessage());
+            System.err.println("[ERRO] Converter ByteArray para Estado: " + e.getMessage());
+            e.printStackTrace();
         }
+    }
+
+    @Override
+    public String toString(){
+        return "Estado{" +
+               "x=" + x +
+               ", y=" + y +
+               ", estado_operacional=" + estado_operacional +
+               ", bateria=" + bateria +
+               ", velocidade=" + velocidade +
+               '}';
     }
 
     @Override

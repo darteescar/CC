@@ -7,8 +7,7 @@ public enum TipoMensagem {
     ML_DATA((byte)4),
     ML_CONFIRM((byte)5),
     ML_ACK((byte)6),
-    TS_REPORT((byte)8),
-    TS_CONFIRM((byte)9);
+    TS_TCP((byte)7);
 
     private final byte codigo;
 
@@ -25,6 +24,6 @@ public enum TipoMensagem {
             if(t.codigo == codigo)
                 return t;
         }
-        throw new IllegalArgumentException("Codigo inválido: " + codigo);
+        throw new IllegalArgumentException("[ERRO] Codigo inválido: " + codigo);
     }
 }
