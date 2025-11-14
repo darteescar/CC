@@ -2,39 +2,49 @@ package protocols.tcp;
 
 import core.NaveMae;
 
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 
 public class TelemetryStreamNM {
-     private final int porta;
-     private Socket socket;
-     private ServerSocket serverSocket;
+     private final ServerSocket serverSocket;
+     private final NaveMae nm;
      private volatile boolean running = true;
 
-     public TelemetryStreamNM(int porta) throws IOException{
-          this.porta = porta;
+     /* ====== Construtor ====== */
+
+     public TelemetryStreamNM(int porta, NaveMae nm) throws IOException{
           this.serverSocket = new ServerSocket(porta);
-          System.out.println("[NaveMae - TL] À escuta de TL na porta: " + porta);
+          this.nm = nm;
+          System.out.println("[NaveMae - TL] A escutar de TL na porta: " + porta);
      }
 
-     public void startTLNaveMae(NaveMae nm){
-          Thread t = new Thread(() -> handlerTSNaveMae(nm), "Thread - TelemetryStreamNM");
+     /* ====== Métodos ====== */
+
+     // Cria a Thread para o protocolo TS para a NaveMae
+     public void startTSNaveMae(){
+          Thread t = new Thread(() -> {
+               while(running){
+                    try{
+                         Socket socket = this.serverSocket.accept();
+                         new Thread(new RoverWorkerTS(socket, nm)).start();
+                    }catch(IOException e){
+                         System.out.println("[ERRO NaveMae - TS] " + e.getMessage());
+                         e.printStackTrace();
+                    }
+               }
+          }, "Thread-TS-NaveMae");
           t.start();
      }
 
-     public void handlerTSNaveMae(NaveMae nm){
-          while(running){
-               try{
-                    this.socket = this.serverSocket.accept();
-
-                    
-               }catch(IOException e){
-                    System.out.println("[ERRO NaveMae - TS] Handler: " + e.getMessage());
-                    e.printStackTrace();
-               }
+     public void stopTSNaveMae(){
+          this.running = false;
+          try {
+               this.serverSocket.close();
+          } catch (IOException e) {
+               System.out.println("[ERRO NaveMae - TS] Stop: " + e.getMessage());
+               e.printStackTrace();
           }
      }
 }

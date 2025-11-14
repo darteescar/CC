@@ -39,7 +39,7 @@ public class MissionLinkRover {
     }
 
     public void startMLRover(Rover rover) {
-        Thread t = new Thread(() -> handlerMLRover(rover), "Thread - MissionLinkRover");
+        Thread t = new Thread(() -> handlerMLRover(rover), "Thread-ML-" + idRover);
         t.start();
     }
 

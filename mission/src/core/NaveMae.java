@@ -6,7 +6,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 
 import data.*;
-//import protocols.tcp.TelemetryStreamNM;
+import protocols.tcp.TelemetryStreamNM;
 import protocols.udp.MissionLinkNM;
 
 import java.net.InetAddress;
@@ -26,7 +26,7 @@ public class NaveMae {
     private final InetAddress ip;
 
     private MissionLinkNM ml;
-    //private TelemetryStreamNM ts;
+    private TelemetryStreamNM ts;
 
     /* ========== Construtor ========== */
 
@@ -40,8 +40,8 @@ public class NaveMae {
         this.roversPorta = new ConcurrentHashMap<>();
 
         try {
-            this.ml = new MissionLinkNM(this.portaUDP);
-            //this.ts = new TelemetryStreamNM(this.portaTCP);
+            this.ml = new MissionLinkNM(this.portaUDP, this);
+            this.ts = new TelemetryStreamNM(this.portaTCP, this);
 
         } catch (Exception e) {
             System.out.println("[ERRO] Falha ao inicializar NaveMae: " + e.getMessage());
@@ -87,13 +87,15 @@ public class NaveMae {
     }
 
     public void startNaveMae(){
-        new Thread(() -> this.ml.startMLNaveMae(this)).start();
-        //this.ts.startTLNaveMae(this);
+        this.ml.startMLNaveMae();
+        this.ts.startTSNaveMae();
         System.out.println("[NaveMae] Todos os serviços foram conectados\n");
     }
 
-    public void atualizaEstado(){
-
+    public void atualizaEstado(String idRover, Estado e){
+        this.roversEstado.put(idRover, e);
+        System.out.println(e.toString());
+        System.out.println("[NaveMae] Estado de " + idRover + " atualizado");
     }
 
     public static void main(String[] args) {
@@ -106,9 +108,9 @@ public class NaveMae {
             NaveMae naveMae = new NaveMae(ip);
 
 
-            Missao m1 = new Missao(100, 1, 2, 3, 4, "Andar", 1, 30);
-            Missao m2 = new Missao(101, 5, 6, 7, 8, "Coletar", 2, 30);
-            Missao m3 = new Missao(102, 9, 10, 11, 12, "Analisar", 3, 30);
+            Missao m1 = new Missao(100, 1, 2, 3, 4, "Andar", 1, 2);
+            Missao m2 = new Missao(101, 5, 6, 7, 8, "Coletar", 2, 2);
+            Missao m3 = new Missao(102, 9, 10, 11, 12, "Analisar", 3, 2);
 
             naveMae.queue.add(m1);
             naveMae.queue.add(m2);
@@ -122,3 +124,8 @@ public class NaveMae {
         }
     }
 }
+
+/* 
+ * javac -d bin $(find src -name "*.java")
+ * java -cp bin core.NaveMae
+ * */

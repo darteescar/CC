@@ -7,7 +7,7 @@ import data.Estado;
 import data.EstadoOperacional;
 import data.Missao;
 import protocols.udp.MissionLinkRover;
-//import protocols.tcp.TelemetryStreamRover;
+import protocols.tcp.TelemetryStreamRover;
 
 public class Rover {
     // Identificação do Rover
@@ -15,6 +15,7 @@ public class Rover {
     private final InetAddress ip;
     private final int porta;
     private Estado estado;
+    private Missao missaoAtual;
 
     // Identificação da Nave Mãe
     private static final String id_NaveMae = "NaveMae";
@@ -24,7 +25,7 @@ public class Rover {
 
     // Protocolos
     private MissionLinkRover ml;
-    //private TelemetryStreamRover ts;
+    private TelemetryStreamRover ts;
 
     /* ========== Construtor ========== */
 
@@ -37,13 +38,13 @@ public class Rover {
         this.ip = ip;
         this.porta = porta;
         this.estado = new Estado();
-
+        this.missaoAtual = null;            
 
         this.ip_NaveMae = ip_NaveMae;
 
         try {
             this.ml = new MissionLinkRover(id, porta, ip_NaveMae, portaUDPNaveMae);
-            //this.ts = new TelemetryStreamRover(id, porta, ip); 
+            this.ts = new TelemetryStreamRover(this, ip_NaveMae, portaTCPNaveMae); 
 
         } catch (Exception e) {
             System.out.println("[ERRO] Falha ao iniciar " + id + ": " + e.getMessage());
@@ -69,6 +70,10 @@ public class Rover {
         return this.estado;
     }
 
+    public Missao getMissaoAtual(){
+        return this.missaoAtual;
+    }
+
     public String getIdNaveMae(){
         return id_NaveMae;
     }
@@ -89,12 +94,28 @@ public class Rover {
 
     public void startRover(){
         this.ml.startMLRover(this);
-        //this.ts.startTSRover(this);
+        this.ts.startTSRover();
     }
 
+    public boolean roverParado(){
+        return this.estado.getEstadoOperacional() == EstadoOperacional.PARADO;
+    }
+
+    public boolean roverEsperaMissao(){
+        return this.estado.getEstadoOperacional() == EstadoOperacional.ESPERA_MISSAO;
+    }
+
+    public boolean roverInoperacional(){
+        return this.estado.getEstadoOperacional() == EstadoOperacional.INOPERACIONAL;
+    }
+ 
     public void executaMissao(Missao missao){
-        // TODO metodo temporario -> da print a missao
         try{
+            this.missaoAtual = missao;
+            this.estado.setEstadoOperacional(EstadoOperacional.EM_MISSAO);
+
+            // TODO metodo temporario -> da print a missao
+            // ter em atençao que ainda existe o A_CAMINHO
             System.out.println(missao.toString());
             Thread.sleep(15*1000);
             this.estado.setEstadoOperacional(EstadoOperacional.PARADO);
@@ -119,7 +140,13 @@ public class Rover {
         rover.startRover();
 
     }catch(UnknownHostException e){
-        System.out.println("Erro no ip: " + e);
+        System.out.println("[Rover - ERRO] problema com IP: " + e.getMessage());
+        e.printStackTrace();
     }
     }
 }
+
+/* 
+ * javac -d bin $(find src -name "*.java")
+ * java -cp bin core.Rover
+ * */
