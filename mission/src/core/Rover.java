@@ -70,6 +70,10 @@ public class Rover {
         return this.estado;
     }
 
+    public Estado tiraFotoEstado(){
+        return this.estado.clone();        
+    }
+
     public Missao getMissaoAtual(){
         return this.missaoAtual;
     }

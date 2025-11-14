@@ -7,6 +7,7 @@ import java.net.Socket;
 
 import core.Rover;
 import data.Estado;
+import data.EstadoOperacional;
 import data.Mensagem;
 import data.TipoMensagem;
 
@@ -38,7 +39,13 @@ public class TelemetryStreamRover {
             boolean estavaParado = true;
 
             while(running){
-                boolean estaParado = rover.roverParado() || rover.roverEsperaMissao() || rover.roverInoperacional();
+                // Vai buscar o estado do Rover
+                Estado estAtual = rover.tiraFotoEstado();
+
+                // Verifica se esta parado
+                boolean estaParado = (estAtual.getEstadoOperacional() == EstadoOperacional.PARADO)
+                                  || (estAtual.getEstadoOperacional() == EstadoOperacional.ESPERA_MISSAO)
+                                  || (estAtual.getEstadoOperacional() == EstadoOperacional.INOPERACIONAL);
 
                 if(estaParado != estavaParado){
                     if(estaParado){
@@ -58,7 +65,6 @@ public class TelemetryStreamRover {
 
                 Thread.sleep(freq);
 
-                Estado estAtual = rover.getEstado();
                 byte[] payload = estAtual.toByteArray();
                 Mensagem m = new Mensagem(TipoMensagem.TS_TCP, 
                                     rover.getId(), 
