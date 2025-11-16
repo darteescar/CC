@@ -109,6 +109,7 @@ public class Rover {
         int idMissao = missao.getId();
 
         System.out.println("[" + this.id + "] A executar missao: " + idMissao);
+        System.out.println(missao.toString());
 
         this.estado.setEstadoOperacional(EstadoOperacional.A_CAMINHO);
         handleACaminho(missao);

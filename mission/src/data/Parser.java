@@ -1,4 +1,4 @@
-package core;
+package data;
 
 import java.io.FileReader;
 import java.util.concurrent.BlockingQueue;
@@ -6,8 +6,6 @@ import java.util.concurrent.BlockingQueue;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-
-import data.Missao;
 
 public class Parser {
 
@@ -34,6 +32,7 @@ public class Parser {
 
                 // Criar a Missao
                 Missao m = new Missao(id, x1, y1, x2, y2, tarefa, duracao, freqUpdate);
+                //System.out.println(m.toString());
 
                 // Adicionar Missao a queue
                 queue.offer(m);

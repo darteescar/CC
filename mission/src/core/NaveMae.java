@@ -87,6 +87,7 @@ public class NaveMae {
     }
 
     public void startNaveMae(){
+        Parser.parseMissoes(this.queue, "resources/missoes.json");
         this.ml.startMLNaveMae();
         this.ts.startTSNaveMae();
         System.out.println("[NaveMae] Todos os serviços foram conectados\n");
@@ -106,15 +107,6 @@ public class NaveMae {
         try{
             InetAddress ip = InetAddress.getByName(args[0]);
             NaveMae naveMae = new NaveMae(ip);
-
-
-            Missao m1 = new Missao(1, 10, 10, 25, 25, "Exploracao", 1, 2);
-            Missao m2 = new Missao(2, 40, 40, 55, 55, "Analise", 1, 5);
-            Missao m3 = new Missao(3, 70, 20, 90, 40, "Coleta", 2, 3);
-
-            naveMae.queue.add(m1);
-            naveMae.queue.add(m2);
-            naveMae.queue.add(m3);
 
             naveMae.startNaveMae();
 

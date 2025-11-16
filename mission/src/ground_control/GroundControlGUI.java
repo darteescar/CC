@@ -45,7 +45,7 @@ public class GroundControlGUI {
           frame.add(scrollPane);
 
           // ---------- Painel do Mapa ----------
-          ImageIcon mapaImg = new ImageIcon(getClass().getResource("/ground_control/mapa.jpg"));
+          ImageIcon mapaImg = new ImageIcon(getClass().getResource("mapa.jpg"));
           mapaPanel = new MapaPanel(mapaImg.getImage(), estados, coresRovers);
           mapaPanel.setBounds(470, 10, 920, 745);
           frame.add(mapaPanel);

@@ -12,6 +12,8 @@ public class GroundControl {
     //private HTTP http = new HTTP();
 
     // ---------- Main ----------
+
+    /* 
     public static void main(String[] args) {
         
         Map<String, Estado> estados = new ConcurrentHashMap<>();
@@ -36,4 +38,5 @@ public class GroundControl {
 
         }
     }
+        */
 }
