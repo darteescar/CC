@@ -3,7 +3,6 @@ package protocols.udp;
 import java.net.InetAddress;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 import core.NaveMae;
 import data.Mensagem;
@@ -37,12 +36,7 @@ public class RoverWorkerML implements Runnable{
         System.out.println("[WorkerML - " + idRover + "] Iniciado");
         try{
             while(running){
-                Mensagem m = queue.poll(30, TimeUnit.SECONDS);
-                if(m == null){
-                    System.out.println("[WorkerML - " + idRover + "] Rover inativo");
-                    this.paraCiclo();
-                    break;
-                }
+                Mensagem m = queue.take();
                 this.handleMensagem(m);
             }
         }catch(Exception e){

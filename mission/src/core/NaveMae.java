@@ -108,9 +108,9 @@ public class NaveMae {
             NaveMae naveMae = new NaveMae(ip);
 
 
-            Missao m1 = new Missao(100, 1, 2, 3, 4, "Andar", 1, 2);
-            Missao m2 = new Missao(101, 5, 6, 7, 8, "Coletar", 2, 2);
-            Missao m3 = new Missao(102, 9, 10, 11, 12, "Analisar", 3, 2);
+            Missao m1 = new Missao(1, 10, 10, 25, 25, "Exploracao", 1, 2);
+            Missao m2 = new Missao(2, 40, 40, 55, 55, "Analise", 1, 5);
+            Missao m3 = new Missao(3, 70, 20, 90, 40, "Coleta", 2, 3);
 
             naveMae.queue.add(m1);
             naveMae.queue.add(m2);
