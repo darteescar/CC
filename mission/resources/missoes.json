@@ -93,7 +93,7 @@
     "id": 109,
     "x1": 90,
     "y1": 10,
-    "x2": 110,
+    "x2": 100,
     "y2": 35,
     "tarefa": "Tirar Fotos",
     "duracao": 4,
@@ -183,8 +183,8 @@
     "id": 118,
     "x1": 85,
     "y1": 85,
-    "x2": 110,
-    "y2": 110,
+    "x2": 100,
+    "y2": 100,
     "tarefa": "Medir temperatura",
     "duracao": 1,
     "freq_update": 5
@@ -192,9 +192,9 @@
   {
     "id": 119,
     "x1": 15,
-    "y1": 90,
+    "y1": 80,
     "x2": 35,
-    "y2": 110,
+    "y2": 100,
     "tarefa": "Explorar",
     "duracao": 3,
     "freq_update": 7
