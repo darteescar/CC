@@ -17,6 +17,7 @@ public class NaveMae {
     private Map<String, Estado> roversEstado;
     private Map<String, InetAddress> roversIP;
     private Map<String, Integer> roversPorta;
+    private Map<String, Missao> roversMissao;
 
     private final BlockingQueue<Missao> queue;
 
@@ -38,6 +39,7 @@ public class NaveMae {
         this.roversEstado = new ConcurrentHashMap<>();
         this.roversIP = new ConcurrentHashMap<>();
         this.roversPorta = new ConcurrentHashMap<>();
+        this.roversMissao = new ConcurrentHashMap<>();
 
         try {
             this.ml = new MissionLinkNM(this.portaUDP, this);
@@ -82,8 +84,11 @@ public class NaveMae {
         System.out.println("[NaveMae] Novo rover adicionado: " + id);
     }
 
-    public Missao getMissaoQueue() throws InterruptedException{
-        return this.queue.take();
+    public Missao getMissaoQueue(String idRover) throws InterruptedException{
+        Missao missao =  this.queue.take();
+        roversMissao.put(idRover, missao);
+        
+        return missao;
     }
 
     public void startNaveMae(){

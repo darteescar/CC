@@ -88,7 +88,7 @@ public class RoverWorkerML implements Runnable{
         envioML.confirmarRecebimento(idRover + "_SYNACK");
 
         // Enviar missão
-        Missao missao = nm.getMissaoQueue();
+        Missao missao = nm.getMissaoQueue(this.idRover);
         Mensagem mDATA = new Mensagem(TipoMensagem.ML_DATA, 
                                 "NaveMae", 
                                 nm.getIP(), 
