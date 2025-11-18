@@ -69,6 +69,18 @@ public class NaveMae {
         return this.portaTCP;
     }
 
+    public int getNumeroRovers(){
+        return this.roversEstado.size();
+    }
+
+    public Estado getEstadoRover(String idRover){
+        return this.roversEstado.get(idRover);
+    }
+
+    public Missao getMissaoRover(String idRover){
+        return this.roversMissao.get(idRover);
+    }
+
     /* ====== Métodos ====== */
 
     public boolean conheceRover(String idRover){

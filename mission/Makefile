@@ -55,6 +55,16 @@ else
 	$(error Necessário fornecer ID: make rover ID=<id> IP_ROVER=<ip> PORTA=<porta> IP_NAVEMAE=<ip>)
 endif
 
+# Executar GroundControl
+# Uso: make groundcontrol URL=http://127.0.0.1:7000
+groundcontrol:
+ifeq ($(URL),)
+	$(error Necessário fornecer URL da Nave Mãe: make groundcontrol URL=<url>)
+endif
+	@echo ">> Iniciando GroundControl com URL $(URL)..."
+	java -cp "$(CLASSPATH)" ground_control.GroundControl $(URL)
+
+
 # Clean
 clean:
 	@echo ">> A limpar ficheiros compilados..."
