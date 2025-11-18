@@ -1,6 +1,7 @@
 {
     "java.project.referencedLibraries": [
         "lib/**/*.jar",
+        "mission/lib/json-simple-1.1.1.jar"
     ],
     "java.project.sourcePaths": [
         "mission/src"
