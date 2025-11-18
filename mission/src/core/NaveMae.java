@@ -90,7 +90,7 @@ public class NaveMae {
         Parser.parseMissoes(this.queue, "resources/missoes.json");
         this.ml.startMLNaveMae();
         this.ts.startTSNaveMae();
-        System.out.println("[NaveMae] Todos os serviços foram conectados\n");
+        System.out.println("[NaveMae] Todos os serviços foram iniciados\n");
     }
 
     public void atualizaEstado(String idRover, Estado e){

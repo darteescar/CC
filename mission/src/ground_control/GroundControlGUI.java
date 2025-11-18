@@ -1,6 +1,7 @@
 package ground_control;
 
 import data.Estado;
+import data.Missao;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +13,7 @@ public class GroundControlGUI {
      private JScrollPane scrollPane;
      private MapaPanel mapaPanel;
 
-     public GroundControlGUI(Map<String, Estado> estados) {
+     public GroundControlGUI(Map<String, Estado> estados, Map<String, Missao> missoes) {
           // ---------- Inicialização das cores dos rovers
           Color[] cores = {
                Color.RED, Color.BLUE, Color.GREEN, Color.ORANGE,
@@ -46,7 +47,7 @@ public class GroundControlGUI {
 
           // ---------- Painel do Mapa ----------
           ImageIcon mapaImg = new ImageIcon(getClass().getResource("mapa.jpg"));
-          mapaPanel = new MapaPanel(mapaImg.getImage(), estados, coresRovers);
+          mapaPanel = new MapaPanel(mapaImg.getImage(), estados, coresRovers, missoes);
           mapaPanel.setBounds(470, 10, 920, 745);
           frame.add(mapaPanel);
 
