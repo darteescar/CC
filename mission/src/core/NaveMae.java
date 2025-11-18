@@ -84,11 +84,16 @@ public class NaveMae {
         System.out.println("[NaveMae] Novo rover adicionado: " + id);
     }
 
-    public Missao getMissaoQueue(String idRover) throws InterruptedException{
-        Missao missao =  this.queue.take();
-        roversMissao.put(idRover, missao);
-        
-        return missao;
+    public Missao getMissaoQueue() throws InterruptedException{
+        return this.queue.take();
+    }
+
+    public void putMissaoMap(String idRover, Missao missao){
+        this.roversMissao.put(idRover, missao);
+    }
+
+    public void removeMissaoMap(String idRover){
+        this.roversMissao.remove(idRover);
     }
 
     public void startNaveMae(){
