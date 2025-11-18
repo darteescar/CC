@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class GroundControl {
-    //private HTTP http = new HTTP();
+    //private HTTP http = new HTTP(); ajustado para não ser estático
     
     public static void main(String[] args) {
         
