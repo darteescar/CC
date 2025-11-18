@@ -64,6 +64,8 @@ public class RoverWorkerML implements Runnable{
     }
 
     public void handleSYN() throws Exception{
+        this.nm.removeMissaoMap(idRover);
+
         Mensagem mSYNACK = new Mensagem(TipoMensagem.ML_SYNACK, 
                                         "NaveMae", 
                                         nm.getIP(), 
@@ -89,6 +91,8 @@ public class RoverWorkerML implements Runnable{
 
         // Enviar missão
         Missao missao = nm.getMissaoQueue();
+        this.nm.putMissaoMap(idRover, missao);
+
         Mensagem mDATA = new Mensagem(TipoMensagem.ML_DATA, 
                                 "NaveMae", 
                                 nm.getIP(), 
