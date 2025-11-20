@@ -42,19 +42,19 @@ public class HTTPGC {
      }
 
      public int getNumeroRovers() throws Exception {
-          byte[] bytes = getBytes("/numeroRovers");
+          byte[] bytes = getBytes("/getnumeroRovers");
           return ByteBuffer.wrap(bytes).getInt(); // converte o array de bytes em um buffer e lê 4 bytes seguintes como um inteiro
      }
 
      public Estado getEstadoRover(String nome) throws Exception {
-          byte[] bytes = getBytes("/estadoRover?nome=" + nome);
+          byte[] bytes = getBytes("/getestadoRover?nome=" + nome);
           Estado estado = new Estado();
           estado.fromByteArray(bytes);
           return estado;
      }
 
       public Missao getMissaoRover(String nome) throws Exception {
-          byte[] bytes = getBytes("/missaoRover?nome=" + nome);
+          byte[] bytes = getBytes("/getmissaoRover?nome=" + nome);
           Missao missao = new Missao();
           missao.fromByteArray(bytes);
           return missao;
