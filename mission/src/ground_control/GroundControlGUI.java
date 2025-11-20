@@ -47,6 +47,9 @@ public class GroundControlGUI {
 
           // ---------- Painel do Mapa ----------
           ImageIcon mapaImg = new ImageIcon(getClass().getResource("/mapa.jpg"));
+          if (mapaImg.getIconWidth() == -1) {
+               System.err.println("Erro ao carregar a imagem do mapa.");
+          }
           mapaPanel = new MapaPanel(mapaImg.getImage(), estados, coresRovers, missoes);
           mapaPanel.setBounds(470, 10, 920, 745);
           frame.add(mapaPanel);
