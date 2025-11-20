@@ -33,36 +33,27 @@ public class MapaPanel extends JPanel {
                Missao m = missoes.get(nome);
                Color cor = coresRovers.get(nome);
 
-               atualizaPintaRover(e, cor);
-               atualizaAreaMissao(m, cor);
+               g.setColor(cor);
+               int x = (int) (e.getX() * getWidth() / 100); // Supondo que X varia de 0 a 100
+               int y = (int) (e.getY() * getHeight() / 100); // Supondo que Y varia de 0 a 100
+               g.fillOval(x - 5, y - 5, 20, 20);
+          
+               double x1 = m.getX1();
+               double y1 = m.getY1();
+               double x2 = m.getX2();
+               double y2 = m.getY2();
+
+               double largura = x2-x1;
+               double altura = y2-y1;
+
+               int px = (int) (x1 * getWidth() / 100);
+               int py = (int) (y1 * getHeight() / 100);
+               int larguraPx = (int) (largura * getWidth() / 100);
+               int alturaPx = (int) (altura * getHeight() / 100);
+
+               g.setColor(cor);
+
+               g.drawRect(px, py, larguraPx, alturaPx);
           }
-     }
-
-     void atualizaPintaRover (Estado e, Color cor) {
-          Graphics g = this.getGraphics();
-          g.setColor(cor);
-          int x = (int) (e.getX() * getWidth() / 100); // Supondo que X varia de 0 a 100
-          int y = (int) (e.getY() * getHeight() / 100); // Supondo que Y varia de 0 a 100
-          g.fillOval(x - 5, y - 5, 20, 20);
-     }
-
-     void atualizaAreaMissao (Missao m, Color cor) {
-          Graphics g = this.getGraphics();
-          double x1 = m.getX1();
-          double y1 = m.getY1();
-          double x2 = m.getX2();
-          double y2 = m.getY2();
-
-          double largura = x2-x1;
-          double altura = y2-y1;
-
-          int px = (int) (x1 * getWidth() / 100);
-          int py = (int) (y1 * getHeight() / 100);
-          int larguraPx = (int) (largura * getWidth() / 100);
-          int alturaPx = (int) (altura * getHeight() / 100);
-
-          g.setColor(cor);
-
-          g.drawRect(px, py, larguraPx, alturaPx);
      }
 }

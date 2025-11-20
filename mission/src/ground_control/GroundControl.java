@@ -29,8 +29,7 @@ public class GroundControl {
         while (true) {
             try {
                 int num_rovers = http.getNumeroRovers();
-                for (int i = 1; i <= num_rovers; i++) {
-                    String nome = "R-" + i;
+                for (String nome : estados.keySet()) {
                     Estado estado = http.getEstadoRover(nome);
                     Missao missao = http.getMissaoRover(nome);
                     if (estado != null) {
