@@ -1,15 +1,14 @@
-// Código completo com as alterações sugeridas: cores inicializadas apenas uma vez
-// e mantidas ao longo de toda a aplicação.
-
 package ground_control;
 
 import data.Estado;
 import data.Missao;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.List;
 import protocols.http.HTTPGC;
 
 public class GroundControl {
+
     private HTTPGC http;
 
     public GroundControl(String urlNaveMae) {
@@ -28,16 +27,20 @@ public class GroundControl {
 
         while (true) {
             try {
-                int num_rovers = http.getNumeroRovers();
-                for (int i = 1; i <= num_rovers; i++) {
-                    String nome = "R-" + i;
-                    Estado estado = http.getEstadoRover(nome);
-                    Missao missao = http.getMissaoRover(nome);
-                    if (estado != null) {
+                List<String> rovers = http.getListaRovers();
+
+                for (String nome : rovers) {
+
+                    try {
+                        Estado estado = http.getEstadoRover(nome);
                         estados.put(nome, estado);
-                    }
-                    if (missao != null) {
-                        missoes.put(nome, missao);
+
+                        Missao missao = http.getMissaoRover(nome);
+                        if (missao != null)
+                            missoes.put(nome, missao);
+
+                    } catch (RuntimeException ignored) {
+                        // ignora 404 (caso raro de race condition)
                     }
                 }
 
@@ -50,6 +53,4 @@ public class GroundControl {
             }
         }
     }
-
-        
 }

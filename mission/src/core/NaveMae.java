@@ -1,6 +1,7 @@
 package core;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -83,6 +84,10 @@ public class NaveMae {
 
     public Missao getMissaoRover(String idRover){
         return this.roversMissao.get(idRover);
+    }
+
+    public Set<String> getRoversID() {
+        return this.roversEstado.keySet();
     }
 
     /* ====== Métodos ====== */

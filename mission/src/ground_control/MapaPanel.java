@@ -9,12 +9,14 @@ import java.util.Map;
 import javax.swing.JPanel;
 
 public class MapaPanel extends JPanel {
-     private Image fundo;
-     private Map<String, Estado> estados;
-     private Map<String, Missao> missoes;
-     private Map<String, Color> coresRovers;
+     private final Image fundo;
+     private final Map<String, Estado> estados;
+     private final Map<String, Missao> missoes;
+     private final Map<String, Color> coresRovers;
 
-     public MapaPanel(Image fundo, Map<String, Estado> estados, Map<String, Color> coresRovers, Map<String, Missao> missoes) {
+     public MapaPanel(Image fundo, Map<String, Estado> estados, 
+                      Map<String, Color> coresRovers, Map<String, Missao> missoes) {
+
           this.fundo = fundo;
           this.estados = estados;
           this.coresRovers = coresRovers;
@@ -24,45 +26,47 @@ public class MapaPanel extends JPanel {
      @Override
      protected void paintComponent(Graphics g) {
           super.paintComponent(g);
+
+          // Fundo
           g.drawImage(fundo, 0, 0, getWidth(), getHeight(), this);
 
-          // Desenha rovers como pontos com cores consistentes
-          for (int i = 1; i <= estados.size(); i++) {
-               String nome = "R-" + i;
+          // Desenhar rovers e missões existentes
+          for (String nome : estados.keySet()) {
+
                Estado e = estados.get(nome);
                Missao m = missoes.get(nome);
                Color cor = coresRovers.get(nome);
 
-               atualizaPintaRover(e, cor);
-               atualizaAreaMissao(m, cor);
+               if (cor == null) 
+                   cor = Color.WHITE; // fallback seguro
+
+               if (m != null)
+                    desenhaAreaMissao(g, m, cor);
+
+               if (e != null)
+                    desenhaRover(g, e, cor);
           }
      }
 
-     void atualizaPintaRover (Estado e, Color cor) {
-          Graphics g = this.getGraphics();
+     /** Desenha o rover como um ponto colorido */
+     private void desenhaRover(Graphics g, Estado e, Color cor) {
           g.setColor(cor);
-          int x = (int) (e.getX() * getWidth() / 100); // Supondo que X varia de 0 a 100
-          int y = (int) (e.getY() * getHeight() / 100); // Supondo que Y varia de 0 a 100
+
+          int x = (int) (e.getX() * getWidth() / 100.0);
+          int y = (int) (e.getY() * getHeight() / 100.0);
+
           g.fillOval(x - 5, y - 5, 20, 20);
      }
 
-     void atualizaAreaMissao (Missao m, Color cor) {
-          Graphics g = this.getGraphics();
-          double x1 = m.getX1();
-          double y1 = m.getY1();
-          double x2 = m.getX2();
-          double y2 = m.getY2();
-
-          double largura = x2-x1;
-          double altura = y2-y1;
-
-          int px = (int) (x1 * getWidth() / 100);
-          int py = (int) (y1 * getHeight() / 100);
-          int larguraPx = (int) (largura * getWidth() / 100);
-          int alturaPx = (int) (altura * getHeight() / 100);
-
+     /** Desenha a área da missão correspondente */
+     private void desenhaAreaMissao(Graphics g, Missao m, Color cor) {
           g.setColor(cor);
 
-          g.drawRect(px, py, larguraPx, alturaPx);
+          int px = (int) (m.getX1() * getWidth() / 100.0);
+          int py = (int) (m.getY1() * getHeight() / 100.0);
+          int largura = (int) ((m.getX2() - m.getX1()) * getWidth() / 100.0);
+          int altura = (int) ((m.getY2() - m.getY1()) * getHeight() / 100.0);
+
+          g.drawRect(px, py, largura, altura);
      }
 }
