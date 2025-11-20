@@ -6,6 +6,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 
 import data.*;
+import protocols.http.HTTPNM;
 import protocols.tcp.TelemetryStreamNM;
 import protocols.udp.MissionLinkNM;
 
@@ -24,10 +25,12 @@ public class NaveMae {
     private final String id = "NaveMae";
     private final int portaUDP = 5000;
     private final int portaTCP = 6000;
+    private final int portaHTTP = 7000;
     private final InetAddress ip;
 
     private MissionLinkNM ml;
     private TelemetryStreamNM ts;
+    private HTTPNM http;
 
     /* ========== Construtor ========== */
 
@@ -44,6 +47,7 @@ public class NaveMae {
         try {
             this.ml = new MissionLinkNM(this.portaUDP, this);
             this.ts = new TelemetryStreamNM(this.portaTCP, this);
+            this.http = new HTTPNM(portaHTTP, this);
 
         } catch (Exception e) {
             System.out.println("[ERRO] Falha ao inicializar NaveMae: " + e.getMessage());
@@ -112,6 +116,7 @@ public class NaveMae {
         Parser.parseMissoes(this.queue, "resources/missoes.json");
         this.ml.startMLNaveMae();
         this.ts.startTSNaveMae();
+        this.http.start();
         System.out.println("[NaveMae] Todos os serviços foram iniciados\n");
     }
 

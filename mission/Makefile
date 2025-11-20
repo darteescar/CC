@@ -56,11 +56,8 @@ else
 endif
 
 # Executar GroundControl
-# Uso: make groundcontrol URL=http://127.0.0.1:7000
+# Uso: make groundcontrol 
 groundcontrol:
-ifeq ($(URL),)
-	$(error Necessário fornecer URL da Nave Mãe: make groundcontrol URL=<url>)
-endif
 	@echo ">> Iniciando GroundControl com URL $(URL)..."
 	java -cp "$(CLASSPATH)" ground_control.GroundControl $(URL)
 

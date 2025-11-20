@@ -17,7 +17,7 @@ public class GroundControl {
     }
 
     public static void main(String[] args) {
-        GroundControl gc = new GroundControl("http://127.0.0.1:7000");
+        GroundControl gc = new GroundControl("http://10.0.6.21:7000");
         gc.run();
     }
 
