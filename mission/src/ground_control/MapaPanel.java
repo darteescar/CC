@@ -12,10 +12,10 @@ public class MapaPanel extends JPanel {
      private final Image fundo;
      private final Map<String, Estado> estados;
      private final Map<String, Missao> missoes;
-     private final Map<String, Color> coresRovers;
+     private final Color[] coresRovers;
 
      public MapaPanel(Image fundo, Map<String, Estado> estados, 
-                      Map<String, Color> coresRovers, Map<String, Missao> missoes) {
+                      Color[] coresRovers, Map<String, Missao> missoes) {
 
           this.fundo = fundo;
           this.estados = estados;
@@ -30,12 +30,13 @@ public class MapaPanel extends JPanel {
           // Fundo
           g.drawImage(fundo, 0, 0, getWidth(), getHeight(), this);
 
+          int i = 0;
           // Desenhar rovers e missões existentes
           for (String nome : estados.keySet()) {
 
                Estado e = estados.get(nome);
                Missao m = missoes.get(nome);
-               Color cor = coresRovers.get(nome);
+               Color cor = coresRovers[i % coresRovers.length];
 
                if (cor == null) 
                    cor = Color.WHITE; // fallback seguro
@@ -45,6 +46,8 @@ public class MapaPanel extends JPanel {
 
                if (e != null)
                     desenhaRover(g, e, cor);
+
+               i++;
           }
      }
 
