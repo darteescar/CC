@@ -34,7 +34,7 @@ endif
 	java -cp "$(CLASSPATH)" $(SERVER_MAIN) $(IP)
 
 # Executar Rover
-# Uso: make rover ID=R1 IP_ROVER=10.0.0.20 PORTA=7000 IP_NAVEMAE=10.0.1.20
+# Uso: make rover ID=R-X IP_ROVER=X.X.X.X PORTA=7000 IP_NAVEMAE=10.0.4.20
 rover:
 ifneq ($(ID),)
 ifneq ($(IP_ROVER),)
