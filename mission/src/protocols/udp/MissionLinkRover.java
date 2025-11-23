@@ -2,12 +2,18 @@ package protocols.udp;
 
 import data.EstadoOperacional;
 import data.Mensagem;
+import data.Report;
 import data.TipoMensagem;
 import data.Missao;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import javax.imageio.ImageIO;
 import java.net.*;
-import core.Rover; // assumindo que tens uma classe Rover com estado_operacional
+import java.util.Arrays;
+import core.Rover;
 
 public class MissionLinkRover {
     private final String idRover;
@@ -139,6 +145,124 @@ public class MissionLinkRover {
                 System.out.println("[ERRO " + idRover + " - ML] Handler: " + e.getMessage());
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void handlerReportMissao(Rover rover, Missao misao, int numReport, int foto){
+        String path;
+        if(foto == 1) path = "resources/marte_1.jpg";
+        else path = "resources/marte_2.jpg";
+
+        try{
+            // Converter a imagem para um byte[]
+            BufferedImage img = ImageIO.read(new File(path));
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(img, "jpg", baos);
+            byte[] imgBytes = baos.toByteArray();
+
+            int tamMax = 4096;
+            int numFrames = (imgBytes.length + tamMax -1) / tamMax;
+            String idReport = misao.getId() + " - " + numReport;
+
+            for(int i = 0; i < numFrames; i++){
+                int inicio = i * tamMax;
+                int fim = Math.min(inicio + tamMax, imgBytes.length);
+
+                byte[] payload = Arrays.copyOfRange(imgBytes, inicio, fim);
+
+                Mensagem mREPORT = new Report(TipoMensagem.ML_REPORT, 
+                                                this.idRover, 
+                                                rover.getIP(), 
+                                                this.porta, 
+                                                "NaveMae", 
+                                                this.ipNaveMae, 
+                                                this.portaNaveMae, 
+                                                payload,
+                                                idReport,
+                                                numFrames,
+                                                i
+                );
+
+                String chave = "REPORT_" + idReport + "_SEQ_" + i;
+                envioML.sendMensagem(mREPORT.toByteArray(), 
+                                    this.ipNaveMae, 
+                                    this.portaNaveMae, 
+                                    chave
+                );
+                System.out.println("[" + idRover + " - ML] A enviar frame " + i + " da imagem");
+            }
+
+            boolean recebido = false;
+            while(!recebido){
+                try{
+                    Mensagem m = receiveMensagem();
+                    TipoMensagem tp = m.getTipo();
+
+                    switch(tp){
+                        case ML_MISS -> {
+                            System.out.println("[" + idRover + " - ML] MISS de: NaveMae");
+                            byte[] resposta = m.getPayload();
+
+                            for(int i = 0; i < resposta.length; i++){
+                                if(resposta[i] == 0){
+                                    int inicio = i * tamMax;
+                                    int fim = Math.min(inicio + tamMax, imgBytes.length);
+                                    byte[] payload = Arrays.copyOfRange(imgBytes, inicio, fim);
+
+                                    Mensagem mREPORT = new Report(TipoMensagem.ML_REPORT, 
+                                                this.idRover, 
+                                                rover.getIP(), 
+                                                this.porta, 
+                                                "NaveMae", 
+                                                this.ipNaveMae, 
+                                                this.portaNaveMae, 
+                                                payload,
+                                                idReport,
+                                                numFrames,
+                                                i
+                                    );
+
+                                    String chave = "REPORT_" + idReport + "_SEQ_" + i;
+                                    envioML.sendMensagem(mREPORT.toByteArray(), 
+                                                        this.ipNaveMae, 
+                                                        this.portaNaveMae, 
+                                                        chave
+                                    );
+                                }
+                            }
+
+                        }case ML_FIN -> {
+                            System.out.println("[" + idRover + " - ML] FIN de: NaveMae");
+                            Mensagem mOK = new Mensagem(TipoMensagem.ML_OK, 
+                                                this.idRover, 
+                                                rover.getIP(), 
+                                                this.porta, 
+                                                "NaveMae", 
+                                                this.ipNaveMae, 
+                                                this.portaNaveMae, 
+                                                null
+                            );
+
+                            envioML.sendMensagem(mOK.toByteArray(), 
+                                                this.ipNaveMae, 
+                                                this.portaNaveMae, 
+                                                null
+                            );
+
+                            recebido = true;
+                            
+                        }default -> {
+                            // Não vai entrar aqui
+                        }
+                    }
+                }catch(Exception e){
+                    System.out.println("[ERRO " + idRover + " - ML] while - Handler Report Missao: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        }catch(Exception e){
+            System.out.println("[ERRO " + idRover + " - ML] Handler Report Missao: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

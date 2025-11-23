@@ -213,6 +213,7 @@ public class Rover {
         double x2 = missao.getX2();
         double y2 = missao.getY2();
         double duracao = missao.getDuracao() * 60.0; // minutos para segundos
+        String tarefa = missao.getTarefa();
         final int STEP_MS = 200;
 
         // Variaveis do Estado do Rover
@@ -225,6 +226,10 @@ public class Rover {
 
         Random rand = new Random();
         int ciclosBateria = 0;
+
+        int ciclosReport = 0;
+        int numReport = 1;
+        int AlternaFoto = 1;
 
         while(duracao > 0){
 
@@ -253,6 +258,20 @@ public class Rover {
                 bateria = Math.max(0, bateria - 1);
                 this.estado.setBateria(bateria);
                 ciclosBateria = 0;
+            }
+
+            ciclosReport++;
+            if(ciclosReport >= 100){
+                if(tarefa.equals("Gravar Video") || tarefa.equals("Tirar Fotos")){
+                    int foto = AlternaFoto;
+                    int report = numReport;
+                    Thread t = new Thread(() -> this.ml.handlerReportMissao(this, missao, report, foto), "Thread-ML-Report-" + id);
+                    t.start();
+                    if(AlternaFoto == 1) AlternaFoto = 2;
+                    else AlternaFoto = 1;
+                    numReport++;
+                }
+                ciclosReport = 0;
             }
             
             duracao -= dt;

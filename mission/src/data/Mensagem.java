@@ -132,13 +132,13 @@ public class Mensagem implements Serializable {
 
     /* ======= Métodos Auxiliares ======= */
 
-    private static void writeString(DataOutputStream dos, String s) throws IOException {
+    public static void writeString(DataOutputStream dos, String s) throws IOException {
         byte[] data = s.getBytes(StandardCharsets.UTF_8);
         dos.writeInt(data.length);
         dos.write(data);
     }
 
-    private static String readString(DataInputStream dis) throws IOException {
+    public static String readString(DataInputStream dis) throws IOException {
         int len = dis.readInt();
         byte[] data = new byte[len];
         dis.readFully(data);
