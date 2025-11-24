@@ -34,9 +34,7 @@ public class TelemetryStreamRover {
     public void handlerTSRover(){
         try{
             DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-            int freqParado = 1000; // Freq quando parado
-            final int freqMax = 32000; // Limite maximo de 32 segundos
-            boolean estavaParado = true;
+            int freqFixa = 1000; // 1s
 
             while(running){
                 // Vai buscar o estado do Rover
@@ -47,23 +45,7 @@ public class TelemetryStreamRover {
                                   || (estAtual.getEstadoOperacional() == EstadoOperacional.ESPERA_MISSAO)
                                   || (estAtual.getEstadoOperacional() == EstadoOperacional.INOPERACIONAL);
 
-                if(estaParado != estavaParado){
-                    if(estaParado){
-                        // Volta ao estado parado -> reinicia o contador exponencial
-                        freqParado = 1000;
-                    }
-                    estavaParado = estaParado;
-                }
-
-                int freq;
-
-                if(estaParado){
-                    freq = freqParado;
-                }else{
-                    freq = rover.getMissaoAtual().getFreqUpdate() * 1000;
-                }
-
-                Thread.sleep(freq);
+                Thread.sleep(freqFixa);
 
                 byte[] payload = estAtual.toByteArray();
                 Mensagem m = new Mensagem(TipoMensagem.TS_TCP, 
@@ -83,9 +65,6 @@ public class TelemetryStreamRover {
 
                 if(estaParado){
                     System.out.printf("[%s - TS] Enviou estado (Não em Missão) para NaveMae\n", rover.getId());
-
-                    freqParado *= 2; // Exponencial
-                    if (freqParado > freqMax) freqParado = freqMax;
                 }else{
                     System.out.printf("[%s - TS] Enviou estado (Em Missão) para NaveMae\n", rover.getId());
                 }
