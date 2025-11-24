@@ -1,3 +1,4 @@
 #Ignorar .class
 *.class
 bin/
+img/*.jpg
