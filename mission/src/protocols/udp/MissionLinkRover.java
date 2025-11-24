@@ -85,7 +85,7 @@ public class MissionLinkRover {
                     switch (tp) {
                         case ML_SYNACK -> {
                             // Confirma o SYN (parar retransmissão)
-                            envioML.confirmarRecebimento(idRover + "_SYN");
+                            envioML.confirmarRececao(idRover + "_SYN");
                             System.out.println("[" + idRover + " - ML] SYNACK de: NaveMae");
 
                             Mensagem mREQUEST = new Mensagem(TipoMensagem.ML_REQUEST, 
@@ -106,7 +106,7 @@ public class MissionLinkRover {
 
                         case ML_DATA -> {
                             // Confirmar o REQUEST (parar retransmissão)
-                            envioML.confirmarRecebimento(idRover + "_REQUEST");
+                            envioML.confirmarRececao(idRover + "_REQUEST");
                             System.out.println("[" + idRover + " - ML]: DATA (Missão) de: NaveMae");
 
                             Mensagem mCONFIRM = new Mensagem(TipoMensagem.ML_CONFIRM, 
@@ -203,7 +203,7 @@ public class MissionLinkRover {
 
                         case ML_OK -> {
                             // Confirmar o FRAMES (parar retransmissão)
-                            envioML.confirmarRecebimento(idReport + "_FRAMES");
+                            envioML.confirmarRececao(idReport + "_FRAMES");
                             System.out.println("[" + idRover + " - ML] OK de: NaveMae");
 
                             // Envia todas as frames da imagem (REPORT) e nao espera por nada
@@ -261,7 +261,8 @@ public class MissionLinkRover {
                         }
 
                         case ML_MISS -> {
-                            envioML.confirmarRecebimento(idReport + "_END");
+                            // Confirmar o END (parar retransmissão)
+                            envioML.confirmarRececao(idReport + "_END");
                             System.out.println("[" + idRover + " - ML] MISS de: NaveMae");
                             byte[] resposta = m.getPayload();
 
@@ -321,7 +322,8 @@ public class MissionLinkRover {
                             );
 
                         }case ML_FIN -> {
-                            envioML.confirmarRecebimento(idReport + "_END");
+                            // Confirmar o END (parar retransmissão)
+                            envioML.confirmarRececao(idReport + "_END");
                             System.out.println("[" + idRover + " - ML] FIN de: NaveMae");
 
                             // Serializar o idReport

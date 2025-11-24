@@ -49,7 +49,7 @@ public class EnvioML {
         }
     }
 
-    public void confirmarRecebimento(String chave) {
+    public void confirmarRececao(String chave) {
         pendentes.remove(chave);
     }
 

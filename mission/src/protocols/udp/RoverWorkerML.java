@@ -99,7 +99,7 @@ public class RoverWorkerML implements Runnable{
 
     public void handleREQUEST() throws Exception{
         // Confirma o SYNACK (parar retransmissão)
-        envioML.confirmarRecebimento(idRover + "_SYNACK");
+        envioML.confirmarRececao(idRover + "_SYNACK");
 
         // Enviar missão
         Missao missao = nm.getMissaoQueue();
@@ -127,7 +127,7 @@ public class RoverWorkerML implements Runnable{
 
     public void handleCONFIRM(){
         // Confirma o DATA(parar retransmissão)
-        envioML.confirmarRecebimento(idRover + "_DATA");
+        envioML.confirmarRececao(idRover + "_DATA");
         System.out.println("[WorkerML - " + idRover + "] CONFIRM de: " + idRover);
     }
 
@@ -175,7 +175,10 @@ public class RoverWorkerML implements Runnable{
         int numSeq = r.getNumSeq();
         byte[] frame = r.getPayload();
 
-        envioML.confirmarRecebimento(idReport + "_OK");
+        // Confirmar o OK (parar retransmissão)
+        envioML.confirmarRececao(idReport + "_OK");
+        // Confirmar o MISS (parar retransmissão)
+        envioML.confirmarRececao(idReport + "_MISS");
 
         // Adiciona a frame que recebeu ao coletor da report correspondente
         ColetorReport col = coletores.get(idReport);
@@ -192,7 +195,8 @@ public class RoverWorkerML implements Runnable{
         bb.get(texto);
         String idReport = new String(texto);
 
-        envioML.confirmarRecebimento(idReport + "_OK");
+        // Confirmar o OK (parar retransmissão)
+        envioML.confirmarRececao(idReport + "_OK");
 
         ColetorReport col = coletores.get(idReport);
 
@@ -209,10 +213,11 @@ public class RoverWorkerML implements Runnable{
                                         resposta
             );
 
+            // Envia MISS e espera por REPORT
             envioML.sendMensagem(mMISS.toByteArray(), 
                                 ipRover, 
                                 portaRover, 
-                                null
+                                idReport + "_MISS"
             );
 
             System.out.println("[WorkerML - " + idRover + "] MISS enviado para report " + idReport);
@@ -225,8 +230,10 @@ public class RoverWorkerML implements Runnable{
                                         idRover, 
                                         ipRover, 
                                         portaRover,
-                                        null);
-
+                                        null
+            );
+            
+            // Envia FIN e espera FINACK
             envioML.sendMensagem(mFIN.toByteArray(), 
                                 ipRover, 
                                 portaRover,
@@ -235,7 +242,7 @@ public class RoverWorkerML implements Runnable{
 
             try {
                 byte[] imgBytes = col.reconstruirIMGBytes();
-                File out = new File("img/received_report_" + idRover + "_" + idReport + ".jpg");
+                File out = new File("img/report_" + idRover + "_" + idReport + ".jpg");
                 try (FileOutputStream fos = new FileOutputStream(out)) {
                     fos.write(imgBytes);
                 }
@@ -260,7 +267,7 @@ public class RoverWorkerML implements Runnable{
         String idReport = new String(texto);
 
         // Confirma o FIN (parar retransmissão)
-        envioML.confirmarRecebimento(idReport + "_FIN");
+        envioML.confirmarRececao(idReport + "_FIN");
         System.out.println("[WorkerML - " + idRover + "] FINACK de: " + idRover);
     }
 
