@@ -240,6 +240,8 @@ public class RoverWorkerML implements Runnable{
                                 idReport+ "_FIN"
             );
 
+            System.out.println("[WorkerML - " + idRover + "] FIN enviado para report " + idReport);
+
             try {
                 byte[] imgBytes = col.reconstruirIMGBytes();
                 File out = new File("img/report_" + idRover + "_" + idReport + ".jpg");
