@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import java.net.*;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import core.Rover;
 
@@ -148,12 +149,10 @@ public class MissionLinkRover {
         }
     }
 
-    public void handlerReportMissao(Rover rover, Missao misao, int numReport, int foto){
-        String path;
-        if(foto == 1) path = "resources/marte_1.jpg";
-        else path = "resources/marte_2.jpg";
-
+    public void handlerReportMissao(Rover rover, Missao misao, int numReport){
         try{
+            String path = "resources/marte_1.jpg";
+
             // Converter a imagem para um byte[]
             BufferedImage img = ImageIO.read(new File(path));
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -162,35 +161,37 @@ public class MissionLinkRover {
 
             int tamMax = 4096;
             int numFrames = (imgBytes.length + tamMax -1) / tamMax;
-            String idReport = misao.getId() + " - " + numReport;
+            String idReport = misao.getId() + "-" + numReport;
+            System.out.println("[" + idRover + " - ML]: Começar Report: " + idReport);
 
-            for(int i = 0; i < numFrames; i++){
-                int inicio = i * tamMax;
-                int fim = Math.min(inicio + tamMax, imgBytes.length);
+            // Serializar o idReport e numFrames
+            byte[] texto = idReport.getBytes();
+            ByteBuffer bb = ByteBuffer.allocate(4 + 4 + texto.length);
+            bb.putInt(numFrames);
+            bb.putInt(texto.length);
+            bb.put(texto);
 
-                byte[] payload = Arrays.copyOfRange(imgBytes, inicio, fim);
+            byte[] payloadFRAMES = bb.array();
 
-                Mensagem mREPORT = new Report(TipoMensagem.ML_REPORT, 
+            Mensagem mFRAMES = new Mensagem(TipoMensagem.ML_FRAMES, 
                                                 this.idRover, 
                                                 rover.getIP(), 
                                                 this.porta, 
                                                 "NaveMae", 
                                                 this.ipNaveMae, 
                                                 this.portaNaveMae, 
-                                                payload,
-                                                idReport,
-                                                numFrames,
-                                                i
-                );
+                                                payloadFRAMES
 
-                String chave = "REPORT_" + idReport + "_SEQ_" + i;
-                envioML.sendMensagem(mREPORT.toByteArray(), 
-                                    this.ipNaveMae, 
-                                    this.portaNaveMae, 
-                                    chave
-                );
-                System.out.println("[" + idRover + " - ML] A enviar frame " + i + " da imagem");
-            }
+            );
+
+            // Envia FRAMES e espera por OK
+            envioML.sendMensagem(mFRAMES.toByteArray(), 
+                                this.ipNaveMae, 
+                                this.portaNaveMae, 
+                                idReport + "_FRAMES"
+            );
+
+            System.out.println("[" + idRover + " - ML]: Enviou FRAMES para NaveMae");
 
             boolean recebido = false;
             while(!recebido){
@@ -199,10 +200,72 @@ public class MissionLinkRover {
                     TipoMensagem tp = m.getTipo();
 
                     switch(tp){
+
+                        case ML_OK -> {
+                            // Confirmar o FRAMES (parar retransmissão)
+                            envioML.confirmarRecebimento(idReport + "_FRAMES");
+                            System.out.println("[" + idRover + " - ML] OK de: NaveMae");
+
+                            // Envia todas as frames da imagem (REPORT) e nao espera por nada
+                            for(int i = 0; i < numFrames; i++){
+                                int inicio = i * tamMax;
+                                int fim = Math.min(inicio + tamMax, imgBytes.length);
+                                byte[] payloadREPORT = Arrays.copyOfRange(imgBytes, inicio, fim);
+
+                                Mensagem mREPORT = new Report(TipoMensagem.ML_REPORT, 
+                                            this.idRover, 
+                                            rover.getIP(), 
+                                            this.porta, 
+                                            "NaveMae", 
+                                            this.ipNaveMae, 
+                                            this.portaNaveMae, 
+                                            payloadREPORT,
+                                            idReport,
+                                            i
+                                );
+
+                                envioML.sendMensagem(mREPORT.toByteArray(), 
+                                                    this.ipNaveMae, 
+                                                    this.portaNaveMae, 
+                                                    null
+                                );
+                                System.out.println("[" + idRover + " - ML] A enviar frame " + i + " da imagem");
+                            }
+
+                            // Serializar o idReport
+                            ByteBuffer bbEND = ByteBuffer.allocate(4 + texto.length);
+                            bbEND.putInt(texto.length);
+                            bbEND.put(texto);
+
+                            byte[] payloadEND = bbEND.array();
+
+                            Mensagem mEND = new Mensagem(TipoMensagem.ML_END, 
+                                                this.idRover, 
+                                                rover.getIP(), 
+                                                this.porta, 
+                                                "NaveMae", 
+                                                this.ipNaveMae, 
+                                                this.portaNaveMae, 
+                                                payloadEND
+
+                            );
+
+                            // Envia END e espera um MISS ou FIN (sinaliza fim das frames)
+                            envioML.sendMensagem(mEND.toByteArray(), 
+                                                this.ipNaveMae, 
+                                                this.portaNaveMae, 
+                                                idReport + "_END"
+                            ); 
+
+                            System.out.println("[" + idRover + " - ML]: Enviou END para NaveMae");
+                        }
+
                         case ML_MISS -> {
+                            envioML.confirmarRecebimento(idReport + "_END");
                             System.out.println("[" + idRover + " - ML] MISS de: NaveMae");
                             byte[] resposta = m.getPayload();
 
+                            // Reenvia todas as frames da imagem (REPORT) e nao espera por nada
                             for(int i = 0; i < resposta.length; i++){
                                 if(resposta[i] == 0){
                                     int inicio = i * tamMax;
@@ -218,32 +281,68 @@ public class MissionLinkRover {
                                                 this.portaNaveMae, 
                                                 payload,
                                                 idReport,
-                                                numFrames,
                                                 i
                                     );
 
-                                    String chave = "REPORT_" + idReport + "_SEQ_" + i;
                                     envioML.sendMensagem(mREPORT.toByteArray(), 
                                                         this.ipNaveMae, 
                                                         this.portaNaveMae, 
-                                                        chave
+                                                        null
                                     );
+                                    System.out.println("[" + idRover + " - ML] A reenviar frame " + i + " da imagem");
                                 }
                             }
 
-                        }case ML_FIN -> {
-                            System.out.println("[" + idRover + " - ML] FIN de: NaveMae");
-                            Mensagem mOK = new Mensagem(TipoMensagem.ML_OK, 
+                            // Serializar o idReport
+                            ByteBuffer bbEND = ByteBuffer.allocate(4 + texto.length);
+                            bbEND.putInt(texto.length);
+                            bbEND.put(texto);
+
+                            byte[] payloadEND = bbEND.array();
+
+                            Mensagem mEND = new Mensagem(TipoMensagem.ML_END, 
                                                 this.idRover, 
                                                 rover.getIP(), 
                                                 this.porta, 
                                                 "NaveMae", 
                                                 this.ipNaveMae, 
                                                 this.portaNaveMae, 
-                                                null
+                                                payloadEND
+
                             );
 
-                            envioML.sendMensagem(mOK.toByteArray(), 
+                            System.out.println("[" + idRover + " - ML]: Reenviou END para NaveMae");
+
+                            // Envia END e espera um MISS ou FIN (sinaliza fim das frames)
+                            envioML.sendMensagem(mEND.toByteArray(), 
+                                                this.ipNaveMae, 
+                                                this.portaNaveMae, 
+                                                idReport + "_END"
+                            );
+
+                        }case ML_FIN -> {
+                            envioML.confirmarRecebimento(idReport + "_END");
+                            System.out.println("[" + idRover + " - ML] FIN de: NaveMae");
+
+                            // Serializar o idReport
+                            ByteBuffer bbFINACK = ByteBuffer.allocate(4 + texto.length);
+                            bbFINACK.putInt(texto.length);
+                            bbFINACK.put(texto);
+
+                            byte[] payloadFINACK = bbFINACK.array();
+
+                            Mensagem mFINACK = new Mensagem(TipoMensagem.ML_FINACK, 
+                                                this.idRover, 
+                                                rover.getIP(), 
+                                                this.porta, 
+                                                "NaveMae", 
+                                                this.ipNaveMae, 
+                                                this.portaNaveMae, 
+                                                payloadFINACK
+                            );
+
+                            // Envia FINACK e nao espera por nada
+                            envioML.sendMensagem(mFINACK.toByteArray(), 
                                                 this.ipNaveMae, 
                                                 this.portaNaveMae, 
                                                 null
@@ -252,7 +351,7 @@ public class MissionLinkRover {
                             recebido = true;
                             
                         }default -> {
-                            // Não vai entrar aqui
+                            break;
                         }
                     }
                 }catch(Exception e){

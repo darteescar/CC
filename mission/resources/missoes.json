@@ -17,7 +17,7 @@
     "y2": 55,
     "tarefa": "Gravar Video",
     "duracao": 1,
-    "freq_update": 5
+    "freq_update": 10
   },
   {
     "id": 102,
@@ -97,7 +97,7 @@
     "y2": 35,
     "tarefa": "Tirar Fotos",
     "duracao": 4,
-    "freq_update": 9
+    "freq_update": 10
   },
   {
     "id": 110,
@@ -147,7 +147,7 @@
     "y2": 90,
     "tarefa": "Tirar Fotos",
     "duracao": 2,
-    "freq_update": 6
+    "freq_update": 10
   },
   {
     "id": 115,
@@ -157,7 +157,7 @@
     "y2": 50,
     "tarefa": "Gravar Video",
     "duracao": 3,
-    "freq_update": 8
+    "freq_update": 10
   },
   {
     "id": 116,

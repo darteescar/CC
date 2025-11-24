@@ -2,6 +2,8 @@ package protocols.udp;
 
 import data.Estado;
 import data.Mensagem;
+import data.Report;
+import data.TipoMensagem;
 import core.NaveMae;
 
 import java.io.IOException;
@@ -41,7 +43,16 @@ public class MissionLinkNM {
                     this.socket.receive(pacote);
 
                     // Descodifica a Mensagem
-                    Mensagem m = Mensagem.fromByteArray(pacote.getData());
+                    Mensagem temp = Mensagem.fromByteArray(pacote.getData());
+                    TipoMensagem tp = temp.getTipo();
+
+                    Mensagem m;
+                    if(tp == TipoMensagem.ML_REPORT){
+                        m = Report.fromByteArray(pacote.getData());
+                    }else{
+                        m = temp;
+                    }   
+
                     String idRover = m.getIdOrg();
                     InetAddress ipRover = m.getIpOrg();
                     int portaRover = m.getPortaOrg();

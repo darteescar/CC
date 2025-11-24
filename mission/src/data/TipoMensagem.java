@@ -1,16 +1,31 @@
 package data;
 
 public enum TipoMensagem {
-    ML_SYN((byte)1),    // Tipo comum no UDP
-    ML_SYNACK((byte)2), // Tipo comum no UDP
-    ML_REQUEST((byte)3),// Tipo comum no UDP
-    ML_DATA((byte)4),   // Tipo comum no UDP
-    ML_CONFIRM((byte)5),// Tipo comum no UDP
-    TS_TCP((byte)7),    // Tipo comun no TCP
-    ML_REPORT((byte)8), // Tipo especial para report na missao
-    ML_MISS((byte)9),   // Tipo especial para report na missao
-    ML_FIN((byte)10),   // Tipo especial para report na missao
-    ML_OK((byte)11);    // Tipo es+ecial para report na missao
+    ML_SYN((byte)1),    // Rover para NaveMae (comum UDP)
+
+    ML_SYNACK((byte)2), // NaveMae para Rover (comum UDP)
+
+    ML_REQUEST((byte)3),// Rover para NaveMae (comum UDP)
+
+    ML_DATA((byte)4),   // NaveMae para Rover (enviar missao)
+
+    ML_CONFIRM((byte)5),// Rover para NaveMae (confirmar rececao)
+
+    TS_TCP((byte)6),    // Rover para NaveMae (comum TCP)
+
+    ML_FRAMES((byte)7), // Rover para NaveMae (avisa o numero de frames)
+
+    ML_OK((byte)8),     // NaveMae para Rover (confirma que recebeu num frames)
+
+    ML_REPORT((byte)9), // Rover para NaveMae (um frame)
+
+    ML_END((byte)10),   // Rover para NaveMae (ja enviei todos os frames)
+
+    ML_MISS((byte)11),  // NaveMae para Rover (faltam frames)
+
+    ML_FIN((byte)12),   // NaveMae para Rover (recebi tudo)
+
+    ML_FINACK((byte)13);// Rover para NaveMae (ok final)
 
     private final byte codigo;
 
