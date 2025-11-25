@@ -125,10 +125,27 @@ public class RoverWorkerML implements Runnable{
         System.out.println("[WorkerML - " + idRover + "] Missao enviada ao rover: " + idRover);
     }
 
-    public void handleCONFIRM(){
-        // Confirma o DATA(parar retransmissão)
+    public void handleCONFIRM() throws Exception{
+        // Confirma o CONFIRM (parar retransmissão)
         envioML.confirmarRececao(idRover + "_DATA");
-        System.out.println("[WorkerML - " + idRover + "] CONFIRM de: " + idRover);
+
+        Mensagem mCONFIRM_ACK = new Mensagem(TipoMensagem.ML_CONFIRM_ACK, 
+                                "NaveMae", 
+                                nm.getIP(), 
+                                nm.getPortaUDP(),
+                                idRover, 
+                                ipRover, 
+                                portaRover, 
+                                null
+        );
+
+        // Enviar CONFIRM_ACK e nao espera por nada
+        envioML.sendMensagem(mCONFIRM_ACK.toByteArray(), 
+                            ipRover, 
+                            portaRover,
+                            null
+        );
+        System.out.println("[WorkerML - " + idRover + "] CONFIRM_ACK enviado ao rover: " + idRover);
     }
 
     public void handleFRAMES(Mensagem m) throws Exception {
@@ -162,7 +179,7 @@ public class RoverWorkerML implements Runnable{
         envioML.sendMensagem(mOK.toByteArray(), 
                             ipRover, 
                             portaRover, 
-                            idReport + "_OK"
+                            null //idReport + "_OK"
         );
 
         System.out.println("[WorkerML - " + idRover + "] OK enviado para report " + idReport);
@@ -176,12 +193,17 @@ public class RoverWorkerML implements Runnable{
         byte[] frame = r.getPayload();
 
         // Confirmar o OK (parar retransmissão)
-        envioML.confirmarRececao(idReport + "_OK");
-        // Confirmar o MISS (parar retransmissão)
-        envioML.confirmarRececao(idReport + "_MISS");
+        //envioML.confirmarRececao(idReport + "_OK"); -> em principio é errado por aqui
 
-        // Adiciona a frame que recebeu ao coletor da report correspondente
+        // Confirmar o MISS (parar retransmissão)
+        //envioML.confirmarRececao(idReport + "_MISS"); -> em principio é errado por aqui
+
+        // Adiciona a frame que recebeu ao coletor do report correspondente
         ColetorReport col = coletores.get(idReport);
+        if(col == null){
+            System.err.println("[WorkerML - " + idRover + "] Report recebido para idReport desconhecido: " + idReport);
+            return;
+        }
         col.addFrame(numSeq, frame);
     }
 
@@ -196,7 +218,7 @@ public class RoverWorkerML implements Runnable{
         String idReport = new String(texto);
 
         // Confirmar o OK (parar retransmissão)
-        envioML.confirmarRececao(idReport + "_OK");
+        //envioML.confirmarRececao(idReport + "_OK");
 
         ColetorReport col = coletores.get(idReport);
 
@@ -217,7 +239,7 @@ public class RoverWorkerML implements Runnable{
             envioML.sendMensagem(mMISS.toByteArray(), 
                                 ipRover, 
                                 portaRover, 
-                                idReport + "_MISS"
+                                null //idReport + "_MISS"
             );
 
             System.out.println("[WorkerML - " + idRover + "] MISS enviado para report " + idReport);

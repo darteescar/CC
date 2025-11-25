@@ -86,7 +86,7 @@ public class MissionLinkRover {
                         case ML_SYNACK -> {
                             // Confirma o SYN (parar retransmissão)
                             envioML.confirmarRececao(idRover + "_SYN");
-                            System.out.println("[" + idRover + " - ML] SYNACK de: NaveMae");
+                            System.out.println("[" + idRover + " - ML]: SYNACK de: NaveMae");
 
                             Mensagem mREQUEST = new Mensagem(TipoMensagem.ML_REQUEST, 
                                                             this.idRover, 
@@ -122,16 +122,23 @@ public class MissionLinkRover {
                             envioML.sendMensagem(mCONFIRM.toByteArray(), 
                                                 this.ipNaveMae, 
                                                 this.portaNaveMae, 
-                                                null);
+                                                this.idRover + "_CONFIRM");
 
-                            Missao missao = new Missao();
-                            missao.fromByteArray(m.getPayload());
-                            int idMisaoRecebida = missao.getId();
+                            Missao missaoRecebida = new Missao();
+                            missaoRecebida.fromByteArray(m.getPayload());
+                            int idMisaoRecebida = missaoRecebida.getId();
                             
                             if(idMisaoRecebida != ultimaMissao){
                                 this.ultimaMissao = idMisaoRecebida;
-                                rover.executaMissao(missao);
+                                rover.setMissaoAtual(missaoRecebida);
                             }
+                        }
+                        case ML_CONFIRM_ACK -> {
+                            // Confirmar o CONFIRM (parar retransmissão)
+                            envioML.confirmarRececao(idRover + "_CONFIRM");
+                            System.out.println("[" + idRover + " - ML]: CONFIRM_ACK de: NaveMae");
+                            System.out.println("[" + idRover + " - ML]: AGORA POSSO FAZER A MISSAO");
+                            rover.executaMissao(rover.getMissaoAtual());
                         }
 
                         default -> System.out.println("[ERRO] Tipo não existente " + tp);
