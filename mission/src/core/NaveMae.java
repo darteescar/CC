@@ -1,18 +1,18 @@
 package core;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-
 import data.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
 import protocols.http.HTTPNM;
 import protocols.tcp.TelemetryStreamNM;
 import protocols.udp.MissionLinkNM;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.util.Collections;
 
 
 public class NaveMae {
@@ -20,6 +20,7 @@ public class NaveMae {
     private Map<String, InetAddress> roversIP;
     private Map<String, Integer> roversPorta;
     private Map<String, Missao> roversMissao;
+    private List <Missao> missoesconcluidas;
 
     private final BlockingQueue<Missao> queue;
 
@@ -44,6 +45,7 @@ public class NaveMae {
         this.roversIP = new ConcurrentHashMap<>();
         this.roversPorta = new ConcurrentHashMap<>();
         this.roversMissao = new ConcurrentHashMap<>();
+        this.missoesconcluidas = new ArrayList<>();
 
         try {
             this.ml = new MissionLinkNM(this.portaUDP, this);
@@ -74,9 +76,7 @@ public class NaveMae {
         return this.portaTCP;
     }
 
-    public int getNumeroRovers(){
-        return this.roversEstado.size();
-    }
+    /* ====== Funcionalidades necessárias ao HTTP ====== */
 
     public Estado getEstadoRover(String idRover){
         return this.roversEstado.get(idRover);
@@ -86,8 +86,19 @@ public class NaveMae {
         return this.roversMissao.get(idRover);
     }
 
-    public Set<String> getRoversID() {
-        return this.roversEstado.keySet();
+    public List<String> getRoversID() {
+        List<String> lista = new ArrayList<>(this.roversEstado.keySet());
+        Collections.sort(lista);
+        return lista;
+    }
+
+    public void addMissaoConcluida(Missao m) {
+        this.missoesconcluidas.add(m);
+    }
+
+    public List<Missao> getMissoesConcluidas() {
+        List<Missao> lista = new ArrayList<>(this.missoesconcluidas);
+        return lista;
     }
 
     /* ====== Métodos ====== */

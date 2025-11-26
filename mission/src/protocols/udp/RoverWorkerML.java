@@ -1,5 +1,10 @@
 package protocols.udp;
 
+import core.NaveMae;
+import data.Mensagem;
+import data.Missao;
+import data.Report;
+import data.TipoMensagem;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,12 +14,6 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
-
-import core.NaveMae;
-import data.Mensagem;
-import data.Missao;
-import data.Report;
-import data.TipoMensagem;
 
 public class RoverWorkerML implements Runnable{
     private final String idRover;
@@ -76,6 +75,8 @@ public class RoverWorkerML implements Runnable{
     }
 
     public void handleSYN() throws Exception{
+        Missao atual = this.nm.getMissaoRover(idRover);
+        this.nm.addMissaoConcluida(atual);
         this.nm.removeMissaoMap(idRover);
 
         Mensagem mSYNACK = new Mensagem(TipoMensagem.ML_SYNACK, 

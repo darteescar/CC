@@ -6,12 +6,12 @@ import com.sun.net.httpserver.HttpServer;
 import core.NaveMae;
 import data.Estado;
 import data.Missao;
-
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.Set;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 public class HTTPNM {
 
@@ -22,10 +22,8 @@ public class HTTPNM {
         this.naveMae = naveMae;
         this.server = HttpServer.create(new InetSocketAddress(porta), 0);
 
-        server.createContext("/getNumeroRovers", new NumeroRoversHandler());
-        server.createContext("/getEstadoRover", new EstadoRoverHandler());
-        server.createContext("/getMissaoRover", new MissaoRoverHandler());
-        server.createContext("/getListaRovers", new ListaRoversHandler());
+        server.createContext("/rovers", new RoverRouter());
+        server.createContext("/missoes/concluidas", new MissoesConcluidas());
     }
 
     public void start() {
@@ -36,100 +34,127 @@ public class HTTPNM {
 
     // ==========================================================
 
-    private class NumeroRoversHandler implements HttpHandler {
+    private class MissoesConcluidas implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-            int numeroRovers = naveMae.getNumeroRovers();
-
-            exchange.getResponseHeaders().set("Content-Type", "application/octet-stream");
-            exchange.sendResponseHeaders(200, Integer.BYTES);
-
-            DataOutputStream out = new DataOutputStream(new BufferedOutputStream(exchange.getResponseBody()));
-            out.writeInt(numeroRovers);
-            out.flush();
-            out.close();
+            
+            enviarListaMissoesConcluidas (exchange);
+            
         }
     }
 
-    private class ListaRoversHandler implements HttpHandler {
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            Set<String> rovers = naveMae.getRoversID();
+    public void enviarListaMissoesConcluidas (HttpExchange exchange) throws IOException {
+        List<Missao> missoes = this.naveMae.getMissoesConcluidas();
 
-            String result = String.join(",", rovers);
-            byte[] bytes = result.getBytes();
-
-            exchange.getResponseHeaders().set("Content-Type", "text/plain");
-            exchange.sendResponseHeaders(200, bytes.length);
-
-            exchange.getResponseBody().write(bytes);
-            exchange.getResponseBody().close();
+        if (missoes == null) {
+            exchange.sendResponseHeaders(404, -1);
+            return;
         }
-    }
 
-    private class EstadoRoverHandler implements HttpHandler {
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            String query = exchange.getRequestURI().getQuery();
-            if (query == null) {
-                exchange.sendResponseHeaders(400, -1);
-                return;
-            }
-
-            String[] partes = query.split("=");
-            if (partes.length != 2 || !partes[0].equals("nome")) {
-                exchange.sendResponseHeaders(400, -1);
-                return;
-            }
-
-            Estado estado = naveMae.getEstadoRover(partes[1]);
-            if (estado == null) {
-                exchange.sendResponseHeaders(404, -1);
-                return;
-            }
-
-            byte[] bytes = estado.toByteArray();
-
-            exchange.getResponseHeaders().set("Content-Type", "application/octet-stream");
-            exchange.sendResponseHeaders(200, bytes.length);
-
-            DataOutputStream out = new DataOutputStream(new BufferedOutputStream(exchange.getResponseBody()));
-            out.write(bytes);
-            out.flush();
-            out.close();
-        }
-    }
-
-    private class MissaoRoverHandler implements HttpHandler {
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            String query = exchange.getRequestURI().getQuery();
-            if (query == null) {
-                exchange.sendResponseHeaders(400, -1);
-                return;
-            }
-
-            String[] partes = query.split("=");
-            if (partes.length != 2 || !partes[0].equals("nome")) {
-                exchange.sendResponseHeaders(400, -1);
-                return;
-            }
-
-            Missao missao = naveMae.getMissaoRover(partes[1]);
-            if (missao == null) {
-                exchange.sendResponseHeaders(404, -1);
-                return;
-            }
-
+        DataOutputStream out = new DataOutputStream(new BufferedOutputStream(exchange.getResponseBody()));
+        
+        out.writeInt(missoes.size());
+        for (Missao missao : missoes) {
             byte[] bytes = missao.toByteArray();
-
-            exchange.getResponseHeaders().set("Content-Type", "application/octet-stream");
-            exchange.sendResponseHeaders(200, bytes.length);
-
-            DataOutputStream out = new DataOutputStream(new BufferedOutputStream(exchange.getResponseBody()));
+            out.writeInt(bytes.length);
             out.write(bytes);
-            out.flush();
-            out.close();
         }
+
+        out.flush();
+        out.close();
+    }
+
+    private class RoverRouter implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            String path = exchange.getRequestURI().getPath();
+            String[] partes = path.split("/");
+
+            // partes[0] = "" (vazio)
+            // partes[1] = "rovers"
+            // partes[2] = "{id}" (opcional)
+            // partes[3] = "estado" ou "missao" (opcional)
+
+            try {
+                if (partes.length == 2) {
+                    enviarListaRovers(exchange);
+                } else if (partes.length == 4) {
+                    String id = partes[2];
+                    String acao = partes[3];
+
+                    switch (acao) {
+                        case "estado":
+                            enviarEstadoRover(exchange, id);
+                            break;
+                        case "missao":
+                            enviarMissaoRover(exchange, id);
+                            break;
+                        default:
+                            exchange.sendResponseHeaders(404, -1);
+                            break;
+                    }
+                } else { // URL inválida
+                    exchange.sendResponseHeaders(404, -1);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                exchange.sendResponseHeaders(500, -1);
+            } finally {
+                exchange.close();
+            }
+        }
+    }
+
+    public void enviarListaRovers (HttpExchange exchange) throws IOException {
+        List<String> lista_ids = this.naveMae.getRoversID();
+
+        if (lista_ids == null || lista_ids.isEmpty()) {
+            exchange.sendResponseHeaders(404, -1);
+            return;
+        }
+
+        DataOutputStream out = new DataOutputStream(new BufferedOutputStream(exchange.getResponseBody()));
+        
+        out.writeInt(lista_ids.size());
+        for (String string : lista_ids) {
+            byte[] bytes = string.getBytes(StandardCharsets.UTF_8);
+            out.writeInt(bytes.length);
+            out.write(bytes);
+        }
+
+        out.flush();
+        out.close();
+    } 
+
+    public void enviarEstadoRover (HttpExchange exchange, String id) throws IOException {
+        Estado estado = this.naveMae.getEstadoRover(id);
+
+        if (estado == null) {
+            exchange.sendResponseHeaders(404, -1);
+            return;
+        }
+
+        DataOutputStream out = new DataOutputStream(new BufferedOutputStream(exchange.getResponseBody()));
+
+        byte[] bytes = estado.toByteArray();
+        out.write(bytes);
+        out.flush();
+        out.close();
+    }
+
+    public void enviarMissaoRover (HttpExchange exchange, String id) throws IOException {
+        Missao missao = this.naveMae.getMissaoRover(id);
+
+        if (missao == null) {
+            exchange.sendResponseHeaders(404, -1);
+            return;
+        }
+
+        DataOutputStream out = new DataOutputStream(new BufferedOutputStream(exchange.getResponseBody()));
+
+        byte[] bytes = missao.toByteArray();
+        out.write(bytes);
+        out.flush();
+        out.close();
     }
 }

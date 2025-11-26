@@ -2,14 +2,12 @@ package protocols.http;
 
 import data.Estado;
 import data.Missao;
-
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 
@@ -49,11 +47,6 @@ public class HTTPGC {
             return List.of();
 
         return Arrays.asList(txt.split(","));
-    }
-
-    public int getNumeroRovers() throws Exception {
-        byte[] bytes = getBytes("/getNumeroRovers");
-        return ByteBuffer.wrap(bytes).getInt();
     }
 
     public Estado getEstadoRover(String nome) throws Exception {
