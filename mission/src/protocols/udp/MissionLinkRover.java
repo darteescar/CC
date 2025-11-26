@@ -237,7 +237,7 @@ public class MissionLinkRover {
                                                     this.portaNaveMae, 
                                                     null
                                 );
-                                System.out.println("[" + idRover + " - ML] A enviar frame " + i + " da imagem");
+                                System.out.println("[" + idRover + " - ML] A enviar frame " + i + " do report " + idReport);
                             }
 
                             // Serializar o idReport
@@ -298,7 +298,7 @@ public class MissionLinkRover {
                                                         this.portaNaveMae, 
                                                         null
                                     );
-                                    System.out.println("[" + idRover + " - ML] A reenviar frame " + i + " da imagem");
+                                    System.out.println("[" + idRover + " - ML] A reenviar frame " + i + " do report " + idReport);
                                 }
                             }
 
@@ -365,7 +365,7 @@ public class MissionLinkRover {
                         }
                     }
                 }catch(Exception e){
-                    System.out.println("[ERRO " + idRover + " - ML] while - Handler Report Missao: " + e.getMessage());
+                    System.out.println("[ERRO " + idRover + " - ML] while - Handler Report" + idReport +"Missao: " + e.getMessage());
                     e.printStackTrace();
                 }
             }

@@ -192,12 +192,6 @@ public class RoverWorkerML implements Runnable{
         int numSeq = r.getNumSeq();
         byte[] frame = r.getPayload();
 
-        // Confirmar o OK (parar retransmissão)
-        //envioML.confirmarRececao(idReport + "_OK"); -> em principio é errado por aqui
-
-        // Confirmar o MISS (parar retransmissão)
-        //envioML.confirmarRececao(idReport + "_MISS"); -> em principio é errado por aqui
-
         // Adiciona a frame que recebeu ao coletor do report correspondente
         ColetorReport col = coletores.get(idReport);
         if(col == null){
@@ -216,9 +210,6 @@ public class RoverWorkerML implements Runnable{
         byte[] texto = new byte[size];
         bb.get(texto);
         String idReport = new String(texto);
-
-        // Confirmar o OK (parar retransmissão)
-        //envioML.confirmarRececao(idReport + "_OK");
 
         ColetorReport col = coletores.get(idReport);
 
@@ -272,7 +263,6 @@ public class RoverWorkerML implements Runnable{
                 }
                 System.out.println("[WorkerML - " + idRover + "] Report " + idReport + " reconstruído em " + out.getAbsolutePath());
 
-                coletores.remove(idReport);
             } catch (IOException e) {
                 System.err.println("[WorkerML - " + idRover + "] Falha ao montar imagem: " + e.getMessage());
                 e.printStackTrace();
@@ -292,6 +282,7 @@ public class RoverWorkerML implements Runnable{
 
         // Confirma o FIN (parar retransmissão)
         envioML.confirmarRececao(idReport + "_FIN");
+        coletores.remove(idReport);
         System.out.println("[WorkerML - " + idRover + "] FINACK de: " + idRover);
     }
 
