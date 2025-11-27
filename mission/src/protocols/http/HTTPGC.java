@@ -8,58 +8,97 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.util.Arrays;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 public class HTTPGC {
 
-    private final String URL;
+    private final String baseUrl;
 
-    public HTTPGC(String URL) {
-        this.URL = URL;
+    public HTTPGC(String baseUrl) {
+        this.baseUrl = baseUrl;
     }
 
-    private byte[] getBytes(String endpoint) throws Exception {
-        URI uri = new URI(this.URL + endpoint);
+    private DataInputStream getStream(String endpoint) throws Exception {
+        URI uri = new URI(baseUrl + endpoint);
         URL url = uri.toURL();
 
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
-        con.setDoInput(true);
 
         int responseCode = con.getResponseCode();
         if (responseCode != 200)
             throw new RuntimeException("HTTP GET falhou: " + responseCode);
 
-        try (InputStream in = con.getInputStream();
-             DataInputStream dataIn = new DataInputStream(new BufferedInputStream(in))) {
-            return dataIn.readAllBytes();
-        } finally {
-            con.disconnect();
-        }
+        InputStream in = con.getInputStream();
+        return new DataInputStream(new BufferedInputStream(in));
     }
+
+    // ======================================================
+    // 1) LISTA DE ROVERS
+    // ======================================================
 
     public List<String> getListaRovers() throws Exception {
-        byte[] bytes = getBytes("/getListaRovers");
+        DataInputStream in = getStream("/rovers");
 
-        String txt = new String(bytes).trim();
-        if (txt.isEmpty())
-            return List.of();
+        int total = in.readInt();
+        List<String> lista = new ArrayList<>(total);
 
-        return Arrays.asList(txt.split(","));
+        for (int i = 0; i < total; i++) {
+            int size = in.readInt();
+            byte[] bytes = in.readNBytes(size);
+            lista.add(new String(bytes, StandardCharsets.UTF_8));
+        }
+
+        return lista;
     }
 
-    public Estado getEstadoRover(String nome) throws Exception {
-        byte[] bytes = getBytes("/getEstadoRover?nome=" + nome);
-        Estado estado = new Estado();
-        estado.fromByteArray(bytes);
-        return estado;
+    // ======================================================
+    // 2) ESTADO DO ROVER
+    // ======================================================
+
+    public Estado getEstadoRover(String id) throws Exception {
+        DataInputStream in = getStream("/rovers/" + id + "/estado");
+
+        byte[] all = in.readAllBytes();
+        Estado e = new Estado();
+        e.fromByteArray(all);
+        return e;
     }
 
-    public Missao getMissaoRover(String nome) throws Exception {
-        byte[] bytes = getBytes("/getMissaoRover?nome=" + nome);
-        Missao missao = new Missao();
-        missao.fromByteArray(bytes);
-        return missao;
+    // ======================================================
+    // 3) MISSÃO DO ROVER
+    // ======================================================
+
+    public Missao getMissaoRover(String id) throws Exception {
+        DataInputStream in = getStream("/rovers/" + id + "/missao");
+
+        byte[] all = in.readAllBytes();
+        Missao m = new Missao();
+        m.fromByteArray(all);
+        return m;
+    }
+
+    // ======================================================
+    // 4) MISSÕES CONCLUÍDAS
+    // ======================================================
+
+    public List<Missao> getMissoesConcluidas() throws Exception {
+        DataInputStream in = getStream("/missoes/concluidas");
+
+        int total = in.readInt();
+        List<Missao> lista = new ArrayList<>(total);
+
+        for (int i = 0; i < total; i++) {
+            int size = in.readInt();
+            byte[] bytes = in.readNBytes(size);
+
+            Missao m = new Missao();
+            m.fromByteArray(bytes);
+            lista.add(m);
+        }
+
+        return lista;
     }
 }

@@ -51,6 +51,8 @@ public class HTTPNM {
             return;
         }
 
+        exchange.sendResponseHeaders(200, 0);
+
         DataOutputStream out = new DataOutputStream(new BufferedOutputStream(exchange.getResponseBody()));
         
         out.writeInt(missoes.size());
@@ -113,6 +115,8 @@ public class HTTPNM {
             return;
         }
 
+        exchange.sendResponseHeaders(200, 0);
+
         DataOutputStream out = new DataOutputStream(new BufferedOutputStream(exchange.getResponseBody()));
         
         out.writeInt(lista_ids.size());
@@ -133,10 +137,11 @@ public class HTTPNM {
             exchange.sendResponseHeaders(404, -1);
             return;
         }
+        byte[] bytes = estado.toByteArray();
+        exchange.sendResponseHeaders(200, bytes.length);
 
         DataOutputStream out = new DataOutputStream(new BufferedOutputStream(exchange.getResponseBody()));
 
-        byte[] bytes = estado.toByteArray();
         out.write(bytes);
         out.flush();
         out.close();
@@ -150,9 +155,10 @@ public class HTTPNM {
             return;
         }
 
-        DataOutputStream out = new DataOutputStream(new BufferedOutputStream(exchange.getResponseBody()));
-
         byte[] bytes = missao.toByteArray();
+        exchange.sendResponseHeaders(200, bytes.length);
+
+        DataOutputStream out = new DataOutputStream(new BufferedOutputStream(exchange.getResponseBody()));
         out.write(bytes);
         out.flush();
         out.close();
