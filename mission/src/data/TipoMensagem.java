@@ -11,21 +11,23 @@ public enum TipoMensagem {
 
     ML_CONFIRM((byte)5),// Rover para NaveMae (confirmar rececao)
 
-    TS_TCP((byte)6),    // Rover para NaveMae (comum TCP)
+    ML_CONFIRM_ACK((byte)6),// Rover para NaveMae (confirmar rececao)
 
-    ML_FRAMES((byte)7), // Rover para NaveMae (avisa o numero de frames)
+    TS_TCP((byte)7),    // Rover para NaveMae (comum TCP)
 
-    ML_OK((byte)8),     // NaveMae para Rover (confirma que recebeu num frames)
+    ML_FRAMES((byte)8), // Rover para NaveMae (avisa o numero de frames)
 
-    ML_REPORT((byte)9), // Rover para NaveMae (um frame)
+    ML_OK((byte)9),     // NaveMae para Rover (confirma que recebeu num frames)
 
-    ML_END((byte)10),   // Rover para NaveMae (ja enviei todos os frames)
+    ML_REPORT((byte)10), // Rover para NaveMae (um frame)
 
-    ML_MISS((byte)11),  // NaveMae para Rover (faltam frames)
+    ML_END((byte)11),   // Rover para NaveMae (ja enviei todos os frames)
 
-    ML_FIN((byte)12),   // NaveMae para Rover (recebi tudo)
+    ML_MISS((byte)12),  // NaveMae para Rover (faltam frames)
 
-    ML_FINACK((byte)13);// Rover para NaveMae (ok final)
+    ML_FIN((byte)13),   // NaveMae para Rover (recebi tudo)
+
+    ML_FINACK((byte)14);// Rover para NaveMae (ok final)
 
     private final byte codigo;
 

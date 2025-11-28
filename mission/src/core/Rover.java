@@ -79,6 +79,10 @@ public class Rover {
         return this.missaoAtual;
     }
 
+    public void setMissaoAtual(Missao missao){
+        this.missaoAtual = missao;
+    }
+
     public String getIdNaveMae(){
         return id_NaveMae;
     }
@@ -105,7 +109,6 @@ public class Rover {
     /* ====== Executar a Missao ====== */
 
     public void executaMissao(Missao missao){
-        this.missaoAtual = missao;
         int idMissao = missao.getId();
 
         System.out.println("[" + this.id + "] A executar missao: " + idMissao);
@@ -228,8 +231,8 @@ public class Rover {
         Random rand = new Random();
         int ciclosBateria = 0;
 
-        int ciclosReport = 0;
         int freq = (freqUpdate * 1000)/200;
+        int ciclosReport = freq; // começa a mandar os reports logo que entra em missao e nao temos de esperar os X segundos
         int numReport = 1;
 
         while(duracao > 0){
