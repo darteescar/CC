@@ -47,7 +47,7 @@ public class GroundControlGUI {
           missoesScroll.getVerticalScrollBar().setPreferredSize(new Dimension(20, 0));
 
           // ---------------------- MAPA ------------------------
-          ImageIcon img = new ImageIcon(getClass().getResource("mapa.jpg"));
+          ImageIcon img = new ImageIcon(getClass().getResource("/mapa.jpg"));
           mapa = new MapaPanel(img.getImage(), estados, cores, missoes);
           mapa.setPreferredSize(new Dimension(810, 840));
           mapa.setMinimumSize(new Dimension(600, 840));
