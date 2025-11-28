@@ -14,9 +14,7 @@ public class GroundControlTest {
         Map<String, Missao> missoes = new HashMap<>();
         Random rand = new Random();
 
-        System.out.println  ("EDgar");
-
-        for (int i = 1; i <= 5; i++) {
+        for (int i = 1; i <= 10; i++) {
             String nome = "Rover " + i;
 
             // Estado fake

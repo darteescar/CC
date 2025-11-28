@@ -1,9 +1,9 @@
 package ground_control;
 
-import javax.swing.*;
+import data.Estado;
 import java.awt.*;
 import java.util.Map;
-import data.Estado;
+import javax.swing.*;
 
 public class RoverListPanel extends JPanel {
 
