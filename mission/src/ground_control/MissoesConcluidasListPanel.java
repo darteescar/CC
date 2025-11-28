@@ -12,7 +12,7 @@ public class MissoesConcluidasListPanel extends JPanel {
           this.missoesConcluidas = missoes;
 
           setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-          setBackground(Color.LIGHT_GRAY);
+          setBackground(Color.WHITE);
      }
 
      public void atualizar() {

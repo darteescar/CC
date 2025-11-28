@@ -28,6 +28,7 @@ public class GroundControlGUI {
           // Painel principal horizontal
           JPanel mainPanel = new JPanel();
           mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));
+          mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // top, left, bottom, right
 
           // ---------------------- ROVERS ----------------------
           roverList = new RoverListPanel(estados, cores);
@@ -48,16 +49,14 @@ public class GroundControlGUI {
           // ---------------------- MAPA ------------------------
           ImageIcon img = new ImageIcon(getClass().getResource("mapa.jpg"));
           mapa = new MapaPanel(img.getImage(), estados, cores, missoes);
-
-          // mapa expande para todo o espaço restante
           mapa.setPreferredSize(new Dimension(810, 840));
           mapa.setMinimumSize(new Dimension(600, 840));
 
-          // Adicionar bordas para criar espaçamento de 10px entre os painéis
-          
           // Adicionar ao painel horizontal
           mainPanel.add(roversScroll);
+          mainPanel.add(Box.createRigidArea(new Dimension(10, 0))); // 10px de espaçamento
           mainPanel.add(missoesScroll);
+          mainPanel.add(Box.createRigidArea(new Dimension(10, 0))); // 10px de espaçamento
           mainPanel.add(mapa);
 
           // Adicionar à frame

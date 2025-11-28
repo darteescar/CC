@@ -15,7 +15,7 @@ public class RoverListPanel extends JPanel {
         this.cores = cores;
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setBackground(Color.LIGHT_GRAY);
+        setBackground(Color.WHITE);
     }
 
     public void atualizar() {
@@ -44,9 +44,9 @@ public class RoverListPanel extends JPanel {
 
         JLabel info = new JLabel(String.format(
             "<html>"
-                + "Posição: (%.1f, %.1f)<br>"
-                + "Bateria: %d%%<br>"
-                + "Velocidade: %.1f m/s</html>",
+                + "<b>Posição:</b> (%.1f, %.1f)<br>"
+                + "<b>Bateria:</b> %d%%<br>"
+                + "<b>Velocidade:</b> %.1f m/s</html>",
             estado.getX(), estado.getY(),
             estado.getBateria(),
             estado.getVelocidade()
