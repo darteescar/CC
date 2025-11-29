@@ -1,12 +1,11 @@
 package protocols.tcp;
 
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.net.Socket;
-
 import core.NaveMae;
 import data.Estado;
 import data.Mensagem;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.net.Socket;
 
 public class RoverWorkerTS implements Runnable{
     private final Socket socket;
@@ -32,7 +31,7 @@ public class RoverWorkerTS implements Runnable{
                 String idRover = m.getIdOrg();
                 Estado e = new Estado();
                 e.fromByteArray(m.getPayload());
-                System.out.printf("[WorkerTS - %s - TS] Estado recebido de: " + idRover + "\n", idRover);
+                System.out.printf("[WorkerTS] Estado recebido de: " + idRover + "\n");
 
                 // NaveMae atualiza o Estado do Rover (idRover)
                 nm.atualizaEstado(idRover, e);
