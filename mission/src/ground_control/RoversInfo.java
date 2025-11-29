@@ -28,7 +28,8 @@ public class RoversInfo {
                     Missao missao = http.getMissaoRover(nome);
                     if (missao != null)
                          missoes.put(nome, missao);
-                    } catch (RuntimeException ignored) {
+                    } 
+                    catch (RuntimeException ignored) {
                          // ignora 404 (caso raro de race condition)
                     }
                }

@@ -28,10 +28,19 @@ public class HTTPGC {
         con.setRequestMethod("GET");
 
         int responseCode = con.getResponseCode();
-        if (responseCode != 200)
-            throw new RuntimeException("HTTP GET falhou: " + responseCode);
 
-        InputStream in = con.getInputStream();
+        InputStream in;
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            in = con.getInputStream();
+        } else {
+            System.out.println("HTTP GET falhou: " + responseCode);
+            in = con.getErrorStream();
+            if (in == null) {
+                // O servidor não enviou corpo de erro
+                throw new RuntimeException("HTTP GET falhou sem corpo de erro: " + responseCode);
+            }
+        }
+
         return new DataInputStream(new BufferedInputStream(in));
     }
 
