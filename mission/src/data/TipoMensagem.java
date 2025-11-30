@@ -27,7 +27,9 @@ public enum TipoMensagem {
 
     ML_FIN((byte)13),   // NaveMae para Rover (recebi tudo)
 
-    ML_FINACK((byte)14);// Rover para NaveMae (ok final)
+    ML_FINACK((byte)14),// Rover para NaveMae (ok final)
+
+    ML_STOP_CON((byte)15); // Agora o rover pode fechar o conexão para o report
 
     private final byte codigo;
 
