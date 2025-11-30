@@ -268,7 +268,7 @@ public class Rover {
             if(ciclosReport >= freq){
                 if(tarefa.equals("Gravar Video") || tarefa.equals("Tirar Fotos")){
                     int report = numReport;
-                    Thread t = new Thread(() -> this.ml.handlerReportMissao(this, missao, report), "Thread-ML-Report-" + id);
+                    Thread t = new Thread(() -> this.ml.handlerReportMissao(this, missao, report));
                     t.start();
                     numReport++;
                 }

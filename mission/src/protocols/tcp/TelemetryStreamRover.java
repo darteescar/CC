@@ -64,9 +64,9 @@ public class TelemetryStreamRover {
                 dos.flush();
 
                 if(estaParado){
-                    System.out.printf("[%s - TS] Enviou estado (Não em Missão) para NaveMae\n", rover.getId());
+                    //System.out.printf("[%s - TS] Enviou estado (Não em Missão) para NaveMae\n", rover.getId());
                 }else{
-                    System.out.printf("[%s - TS] Enviou estado (Em Missão) para NaveMae\n", rover.getId());
+                    //System.out.printf("[%s - TS] Enviou estado (Em Missão) para NaveMae\n", rover.getId());
                 }
             }
         }catch(Exception e){
