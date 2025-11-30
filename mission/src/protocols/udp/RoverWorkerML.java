@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -150,30 +149,25 @@ public class RoverWorkerML implements Runnable{
     }
 
     public void handleFRAMES(Mensagem m) throws Exception {
-        byte[] payload = m.getPayload();
-
-        // Deserializar o idReport e numFrames
-        ByteBuffer bb = ByteBuffer.wrap(payload);
-
-        int numFrames = bb.getInt();
-        int size = bb.getInt();
-
-        byte[] texto = new byte[size];
-        bb.get(texto);
-        String idReport = new String(texto);
+        Report report = (Report)m;
+        String idReport = report.getIdReport();
+        int numFrames = report.getNumFrames();
 
         //Criar um coletor de reports
         ColetorReport col = new ColetorReport(idReport, numFrames);
         this.coletores.put(idReport, col);
 
-        Mensagem mOK = new Mensagem(TipoMensagem.ML_OK,
+        Mensagem mOK = new Report(TipoMensagem.ML_OK,
                                     "NaveMae", 
                                     nm.getIP(), 
                                     nm.getPortaUDP(),
                                     idRover, 
                                     ipRover,
                                     portaRover,
-                                    null
+                                    null,
+                                    idReport,
+                                    -1, // No OK nao interessa o numFrames
+                                    -1  // No OK nao interessa o numSeq
         );
 
         // Envia OK e espera REPORT ou END
@@ -184,14 +178,13 @@ public class RoverWorkerML implements Runnable{
         );
 
         System.out.println("[WorkerML - " + idRover + "] OK enviado para report " + idReport);
-
     }
 
     public void handleREPORT(Mensagem m) {
-        Report r  = (Report)m;
-        String idReport = r.getIdReport();
-        int numSeq = r.getNumSeq();
-        byte[] frame = r.getPayload();
+        Report report  = (Report)m;
+        String idReport = report.getIdReport();
+        int numSeq = report.getNumSeq();
+        byte[] frame = report.getPayload();
 
         // Adiciona a frame que recebeu ao coletor do report correspondente
         ColetorReport col = coletores.get(idReport);
@@ -203,28 +196,29 @@ public class RoverWorkerML implements Runnable{
     }
 
     public void handleEND(Mensagem m) throws Exception {
-        byte[] payload = m.getPayload();
-
-        // Deserializar o idReport
-        ByteBuffer bb = ByteBuffer.wrap(payload);
-        int size = bb.getInt();
-        byte[] texto = new byte[size];
-        bb.get(texto);
-        String idReport = new String(texto);
+        Report report = (Report)m;
+        String idReport = report.getIdReport();
 
         ColetorReport col = coletores.get(idReport);
-
+        if(col == null){
+            System.out.println("[WorkerML - " + idRover + " - ERRO] Coletor de report " + idReport+ " ja foi fechado");
+            System.out.println("[WorkerML - " + idRover + " - ERRO] Ignorar END de report " + idReport);
+            return;
+        }
 
         if (!col.estaCompleto()) {
             byte[] resposta = col.arrayResposta();
-            Mensagem mMISS = new Mensagem(TipoMensagem.ML_MISS,
+            Mensagem mMISS = new Report(TipoMensagem.ML_MISS,
                                         "NaveMae", 
                                         nm.getIP(), 
                                         nm.getPortaUDP(),
                                         idRover, 
                                         ipRover,
                                         portaRover,
-                                        resposta
+                                        resposta,
+                                        idReport,
+                                        -1, // No MISS nao interessa o numFrames
+                                        -1  // No MISS nao interessa o numSeq
             );
 
             // Envia MISS e espera por REPORT
@@ -237,15 +231,18 @@ public class RoverWorkerML implements Runnable{
             System.out.println("[WorkerML - " + idRover + "] MISS enviado para report " + idReport);
 
         } else {
-            Mensagem mFIN = new Mensagem(TipoMensagem.ML_FIN,
+            Mensagem mFIN = new Report(TipoMensagem.ML_FIN,
                                         "NaveMae", 
                                         nm.getIP(), 
                                         nm.getPortaUDP(),
                                         idRover, 
                                         ipRover, 
                                         portaRover,
-                                        null
-            );
+                                        null,
+                                        idReport,
+                                        -1, // No FIN nao interessa o numFrames
+                                        -1  // No FIN nao interessa o numSeq
+            ); 
             
             // Envia FIN e espera FINACK
             envioML.sendMensagem(mFIN.toByteArray(), 
@@ -271,22 +268,39 @@ public class RoverWorkerML implements Runnable{
         }
     }
 
-    public void handleFINACK(Mensagem m){
-        byte[] payload = m.getPayload();
+    public void handleFINACK(Mensagem m) throws Exception{
+        Report report = (Report)m;
+        String idReport = report.getIdReport();
 
-        // Deserializar o idReport
-        ByteBuffer bb = ByteBuffer.wrap(payload);
-        int size = bb.getInt();
-        byte[] texto = new byte[size];
-        bb.get(texto);
-        String idReport = new String(texto);
-
-        // Confirma o FIN (parar retransmissão)
+        // Confirma FIN (parar retransmissão)
         envioML.confirmarRececao(idReport + "_FIN");
-        coletores.remove(idReport);
-        System.out.println("[WorkerML - " + idRover + "] FINACK de: " + idRover);
-    }
+        System.out.println("[WorkerML - " + idRover + "] FINACK de: " + idReport);
 
+
+        Mensagem mSTOP_CON = new Report(
+                TipoMensagem.ML_STOP_CON,
+                "NaveMae",
+                nm.getIP(),
+                nm.getPortaUDP(),
+                idRover,
+                ipRover,
+                portaRover,
+                null,
+                idReport,
+                -1, // No STOP_CON nao interessa o numFrames
+                -1  // No STOP_CON nao interessa o numSeq
+        );
+
+        envioML.sendMensagem(mSTOP_CON.toByteArray(), 
+                            ipRover, 
+                            portaRover, 
+                            null);
+
+        // Remove o coletor de reports para este idReport
+        coletores.remove(idReport);
+
+        System.out.println("[WorkerML - " + idRover + "] STOP_CON enviado para report " + idReport);
+    }
 
     public void addMensagemQueue(Mensagem m){
         queue.offer(m);

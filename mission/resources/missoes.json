@@ -5,7 +5,7 @@
     "y1": 10,
     "x2": 25,
     "y2": 25,
-    "tarefa": "Analise de Rochas",
+    "tarefa": "Tirar Fotos",
     "duracao": 1,
     "freq_update": 3
   },
@@ -16,7 +16,7 @@
     "x2": 55,
     "y2": 55,
     "tarefa": "Gravar Video",
-    "duracao": 1,
+    "duracao": 2,
     "freq_update": 10
   },
   {
@@ -25,9 +25,9 @@
     "y1": 20,
     "x2": 90,
     "y2": 40,
-    "tarefa": "Tirar Fotos",
-    "duracao": 2,
-    "freq_update": 10
+    "tarefa": "Explorar",
+    "duracao": 3,
+    "freq_update": 5
   },
   {
     "id": 103,
@@ -36,7 +36,7 @@
     "x2": 35,
     "y2": 70,
     "tarefa": "Recolher Amostra",
-    "duracao": 3,
+    "duracao": 1,
     "freq_update": 6
   },
   {
@@ -45,9 +45,9 @@
     "y1": 10,
     "x2": 60,
     "y2": 30,
-    "tarefa": "Analise de Rochas",
+    "tarefa": "Gravar Video",
     "duracao": 2,
-    "freq_update": 8
+    "freq_update": 5
   },
   {
     "id": 105,
@@ -55,8 +55,8 @@
     "y1": 60,
     "x2": 95,
     "y2": 80,
-    "tarefa": "Explorar",
-    "duracao": 4,
+    "tarefa": "Tirar Fotos",
+    "duracao": 3,
     "freq_update": 7
   },
   {
@@ -65,8 +65,8 @@
     "y1": 80,
     "x2": 20,
     "y2": 95,
-    "tarefa": "Medir temperatura",
-    "duracao": 1,
+    "tarefa": "Recolher Amostra",
+    "duracao": 2,
     "freq_update": 3
   },
   {
@@ -75,7 +75,7 @@
     "y1": 75,
     "x2": 50,
     "y2": 95,
-    "tarefa": "Gravar Video",
+    "tarefa": "Medir temperatura",
     "duracao": 2,
     "freq_update": 10
   },
