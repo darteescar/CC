@@ -2,6 +2,7 @@ package ground_control;
 
 import data.Estado;
 import data.Missao;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,7 +12,8 @@ public class RoversInfo {
 
      private final HTTPGC http;
      private final Map<String, Estado> estados = new ConcurrentHashMap<>();
-     private final Map<String, Missao> missoes = new ConcurrentHashMap<>();
+     private final Map<String, Missao> missoesAtuais = new ConcurrentHashMap<>();
+     private List<Missao> missoesConcluidas = new ArrayList<>();
 
      public RoversInfo(String baseUrl) {
         this.http = new HTTPGC(baseUrl);
@@ -27,12 +29,13 @@ public class RoversInfo {
 
                     Missao missao = http.getMissaoRover(nome);
                     if (missao != null)
-                         missoes.put(nome, missao);
+                         missoesAtuais.put(nome, missao);
                     } 
                     catch (RuntimeException ignored) {
                          // ignora 404 (caso raro de race condition)
                     }
                }
+               missoesConcluidas = http.getMissoesConcluidas();
                Thread.sleep(1000);
           } catch (Exception e) {
                e.printStackTrace();
@@ -43,7 +46,11 @@ public class RoversInfo {
           return estados;
      }
 
-     public Map<String,Missao> getMissoes() {
-          return missoes;
+     public Map<String,Missao> getMissoesAtuais() {
+          return missoesAtuais;
+     }
+
+     public List<Missao> getMissoesConcluidas() {
+          return missoesConcluidas;
      }
 }

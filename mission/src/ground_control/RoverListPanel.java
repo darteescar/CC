@@ -4,6 +4,7 @@ import data.Estado;
 import java.awt.*;
 import java.util.Map;
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 
 public class RoverListPanel extends JPanel {
 
@@ -15,7 +16,15 @@ public class RoverListPanel extends JPanel {
         this.cores = cores;
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setBackground(Color.WHITE);
+        setBackground(Color.GRAY);
+        setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createEmptyBorder(),
+            "Rovers",
+            TitledBorder.CENTER,
+            TitledBorder.TOP,
+            new Font("Arial", Font.BOLD, 24),
+            Color.WHITE
+        ));
     }
 
     public void atualizar() {
