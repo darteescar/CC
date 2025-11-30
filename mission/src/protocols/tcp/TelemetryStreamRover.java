@@ -1,15 +1,14 @@
 package protocols.tcp;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
-
 import core.Rover;
 import data.Estado;
 import data.EstadoOperacional;
 import data.Mensagem;
 import data.TipoMensagem;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
 
 public class TelemetryStreamRover {
     private final Rover rover; 

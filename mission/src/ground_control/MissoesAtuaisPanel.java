@@ -5,20 +5,18 @@ import java.awt.*;
 import java.util.Map;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import java.util.ArrayList;
-import java.util.List;
 
-public class MissoesConcluidasListPanel extends JPanel {
-     private final List<Missao> missoesConcluidas;
+public class MissoesAtuaisPanel extends JPanel {
+     private Map<String,Missao> missoesAtuais;
 
-     public MissoesConcluidasListPanel (List<Missao> missoes) {
-          this.missoesConcluidas = missoes;
+     public MissoesAtuaisPanel(Map<String,Missao> missoes){
+          this.missoesAtuais = missoes;
 
           setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
           setBackground(Color.GRAY);
           setBorder(BorderFactory.createTitledBorder(
             BorderFactory.createEmptyBorder(),
-            "Missões Concluídas",
+            "Missões Atuais",
             TitledBorder.CENTER,
             TitledBorder.TOP,
             new Font("Arial", Font.BOLD, 24),
@@ -29,8 +27,8 @@ public class MissoesConcluidasListPanel extends JPanel {
      public void atualizar() {
           removeAll();
 
-          for (Missao entry : missoesConcluidas) {
-               add(criarPainel(entry));
+          for (var entry : missoesAtuais.entrySet()) {
+               add(criarPainel(entry.getValue()));
           }
 
           revalidate();
@@ -70,4 +68,5 @@ public class MissoesConcluidasListPanel extends JPanel {
 
           return p;
      }
+
 }

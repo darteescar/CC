@@ -1,12 +1,11 @@
 package protocols.tcp;
 
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.net.Socket;
-
 import core.NaveMae;
 import data.Estado;
 import data.Mensagem;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.net.Socket;
 
 public class RoverWorkerTS implements Runnable{
     private final Socket socket;

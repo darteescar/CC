@@ -33,37 +33,14 @@ public class HTTPNM {
     }
 
     // ==========================================================
+    // Contextos HTTP
+    // ==========================================================
 
     private class MissoesConcluidas implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-            
-            enviarListaMissoesConcluidas (exchange);
-            
+            enviarListaMissoesConcluidas(exchange);
         }
-    }
-
-    public void enviarListaMissoesConcluidas (HttpExchange exchange) throws IOException {
-        List<Missao> missoes = this.naveMae.getMissoesConcluidas();
-
-        if (missoes == null) {
-            exchange.sendResponseHeaders(404, -1);
-            return;
-        }
-
-        exchange.sendResponseHeaders(200, 0);
-
-        DataOutputStream out = new DataOutputStream(new BufferedOutputStream(exchange.getResponseBody()));
-        
-        out.writeInt(missoes.size());
-        for (Missao missao : missoes) {
-            byte[] bytes = missao.toByteArray();
-            out.writeInt(bytes.length);
-            out.write(bytes);
-        }
-
-        out.flush();
-        out.close();
     }
 
     private class RoverRouter implements HttpHandler {
@@ -78,9 +55,9 @@ public class HTTPNM {
             // partes[3] = "estado" ou "missao" (opcional)
 
             try {
-                if (partes.length == 2) {
+                if (partes.length == 2) { // /rovers
                     enviarListaRovers(exchange);
-                } else if (partes.length == 4) {
+                } else if (partes.length == 4) { // /rovers/{id}/estado ou /missao
                     String id = partes[2];
                     String acao = partes[3];
 
@@ -107,47 +84,46 @@ public class HTTPNM {
         }
     }
 
-    public void enviarListaRovers (HttpExchange exchange) throws IOException {
+    // ==========================================================
+    // Métodos de envio de dados
+    // ==========================================================
+
+    public void enviarListaRovers(HttpExchange exchange) throws IOException {
         List<String> lista_ids = this.naveMae.getRoversID();
 
-        if (lista_ids == null || lista_ids.isEmpty()) {
-            exchange.sendResponseHeaders(404, -1);
-            return;
+        if (lista_ids == null) {
+            lista_ids = List.of(); // lista vazia
         }
 
         exchange.sendResponseHeaders(200, 0);
-
-        DataOutputStream out = new DataOutputStream(new BufferedOutputStream(exchange.getResponseBody()));
-        
-        out.writeInt(lista_ids.size());
-        for (String string : lista_ids) {
-            byte[] bytes = string.getBytes(StandardCharsets.UTF_8);
-            out.writeInt(bytes.length);
-            out.write(bytes);
+        try (DataOutputStream out = new DataOutputStream(new BufferedOutputStream(exchange.getResponseBody()))) {
+            out.writeInt(lista_ids.size());
+            for (String id : lista_ids) {
+                byte[] bytes = id.getBytes(StandardCharsets.UTF_8);
+                out.writeInt(bytes.length);
+                out.write(bytes);
+            }
+            out.flush();
         }
+    }
 
-        out.flush();
-        out.close();
-    } 
-
-    public void enviarEstadoRover (HttpExchange exchange, String id) throws IOException {
+    public void enviarEstadoRover(HttpExchange exchange, String id) throws IOException {
         Estado estado = this.naveMae.getEstadoRover(id);
 
         if (estado == null) {
             exchange.sendResponseHeaders(404, -1);
             return;
         }
+
         byte[] bytes = estado.toByteArray();
         exchange.sendResponseHeaders(200, bytes.length);
-
-        DataOutputStream out = new DataOutputStream(new BufferedOutputStream(exchange.getResponseBody()));
-
-        out.write(bytes);
-        out.flush();
-        out.close();
+        try (DataOutputStream out = new DataOutputStream(new BufferedOutputStream(exchange.getResponseBody()))) {
+            out.write(bytes);
+            out.flush();
+        }
     }
 
-    public void enviarMissaoRover (HttpExchange exchange, String id) throws IOException {
+    public void enviarMissaoRover(HttpExchange exchange, String id) throws IOException {
         Missao missao = this.naveMae.getMissaoRover(id);
 
         if (missao == null) {
@@ -157,10 +133,28 @@ public class HTTPNM {
 
         byte[] bytes = missao.toByteArray();
         exchange.sendResponseHeaders(200, bytes.length);
+        try (DataOutputStream out = new DataOutputStream(new BufferedOutputStream(exchange.getResponseBody()))) {
+            out.write(bytes);
+            out.flush();
+        }
+    }
 
-        DataOutputStream out = new DataOutputStream(new BufferedOutputStream(exchange.getResponseBody()));
-        out.write(bytes);
-        out.flush();
-        out.close();
+    public void enviarListaMissoesConcluidas(HttpExchange exchange) throws IOException {
+        List<Missao> missoes = this.naveMae.getMissoesConcluidas();
+
+        if (missoes == null) {
+            missoes = List.of(); // lista vazia
+        }
+
+        exchange.sendResponseHeaders(200, 0);
+        try (DataOutputStream out = new DataOutputStream(new BufferedOutputStream(exchange.getResponseBody()))) {
+            out.writeInt(missoes.size());
+            for (Missao missao : missoes) {
+                byte[] bytes = missao.toByteArray();
+                out.writeInt(bytes.length);
+                out.write(bytes);
+            }
+            out.flush();
+        }
     }
 }

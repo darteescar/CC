@@ -12,7 +12,9 @@ public class GroundControl {
 
         GroundControlGUI gui = new GroundControlGUI(
                 infos.getEstados(),
-                infos.getMissoes()
+                infos.getMissoesAtuais(),
+                infos.getMissoesConcluidas()
+
         );
 
         while (true) {
