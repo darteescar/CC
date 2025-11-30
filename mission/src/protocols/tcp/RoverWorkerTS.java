@@ -31,7 +31,7 @@ public class RoverWorkerTS implements Runnable{
                 String idRover = m.getIdOrg();
                 Estado e = new Estado();
                 e.fromByteArray(m.getPayload());
-                System.out.printf("[WorkerTS] Estado recebido de: " + idRover + "\n");
+                //System.out.printf("[WorkerTS] Estado recebido de: " + idRover + "\n");
 
                 // NaveMae atualiza o Estado do Rover (idRover)
                 nm.atualizaEstado(idRover, e);

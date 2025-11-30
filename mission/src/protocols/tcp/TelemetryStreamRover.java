@@ -1,15 +1,14 @@
 package protocols.tcp;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
-
 import core.Rover;
 import data.Estado;
 import data.EstadoOperacional;
 import data.Mensagem;
 import data.TipoMensagem;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
 
 public class TelemetryStreamRover {
     private final Rover rover; 
@@ -63,11 +62,11 @@ public class TelemetryStreamRover {
                 dos.write(msgBytes);
                 dos.flush();
 
-                if(estaParado){
+                /*if(estaParado){
                     System.out.printf("[%s - TS] Enviou estado (Não em Missão) para NaveMae\n", rover.getId());
                 }else{
                     System.out.printf("[%s - TS] Enviou estado (Em Missão) para NaveMae\n", rover.getId());
-                }
+                }*/
             }
         }catch(Exception e){
             System.out.printf("[ERRO %s - TS] Handler: " + e.getMessage() + "\n", rover.getId());

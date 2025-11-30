@@ -138,7 +138,7 @@ public class NaveMae {
 
     public void atualizaEstado(String idRover, Estado e){
         this.roversEstado.put(idRover, e);
-        System.out.println("[NaveMae] Estado de " + idRover + " atualizado");
+        //System.out.println("[NaveMae] Estado de " + idRover + " atualizado");
     }
 
     public static void main(String[] args) {
