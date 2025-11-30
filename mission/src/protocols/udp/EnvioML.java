@@ -67,7 +67,6 @@ public class EnvioML {
                             p.momentoEnvio = System.currentTimeMillis();
                         }
                     }
-                    Thread.sleep(100); // verificação periódica
                 } catch (Exception ignored) {}
             }
         }, "Thread - Envio ML");
