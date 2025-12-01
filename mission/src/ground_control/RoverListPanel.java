@@ -2,6 +2,9 @@ package ground_control;
 
 import data.Estado;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -30,9 +33,12 @@ public class RoverListPanel extends JPanel {
     public void atualizar() {
         removeAll();
 
+        List<String> lista = new ArrayList<>(this.estados.keySet());
+        Collections.sort(lista);
+
         int i = 0;
-        for (var entry : estados.entrySet()) {
-            add(criarPainel(entry.getKey(), entry.getValue(),
+        for (String nome : lista) {
+            add(criarPainel(nome, this.estados.get(nome),
                     cores[i % cores.length]));
             i++;
         }
