@@ -4,6 +4,8 @@ import data.Estado;
 import data.Missao;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -11,6 +13,8 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class HTTPGC {
 
@@ -110,4 +114,42 @@ public class HTTPGC {
 
         return lista;
     }
+
+    // ======================================================
+    // 4) MAP DE REPORTS
+    // ======================================================
+
+
+    public Map<String, File> getMapReports() throws Exception {
+        DataInputStream in = getStream("/reports");
+
+        Map<String, File> reports = new ConcurrentHashMap<>();
+
+        int total = in.readInt();
+
+        for (int i = 0; i < total; i++) {
+
+            // ---- ID ----
+            int numBytes_id = in.readInt();
+            byte[] idArray = in.readNBytes(numBytes_id);
+            String id = new String(idArray, StandardCharsets.UTF_8);
+
+            // ---- IMAGEM ----
+            int numBytes_file = in.readInt();
+            byte[] fileBytes = in.readNBytes(numBytes_file);
+
+            // ---- CRIAR FICHEIRO TEMPORÁRIO ----
+            File f = new File("img/groundControl/" + id + ".png");  
+            //f.getParentFile().mkdirs();
+
+            try (FileOutputStream fos = new FileOutputStream(f)) {
+                fos.write(fileBytes);
+            }
+
+            reports.put(id, f);
+        }
+
+        return reports;
+    }
+
 }

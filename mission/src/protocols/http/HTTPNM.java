@@ -8,10 +8,13 @@ import data.Estado;
 import data.Missao;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import static java.nio.file.Files.readAllBytes;
 import java.util.List;
+import java.util.Map;
 
 public class HTTPNM {
 
@@ -24,6 +27,7 @@ public class HTTPNM {
 
         server.createContext("/rovers", new RoverRouter());
         server.createContext("/missoes/concluidas", new MissoesConcluidas());
+        server.createContext("/reports", new Reports());
     }
 
     public void start() {
@@ -35,6 +39,13 @@ public class HTTPNM {
     // ==========================================================
     // Contextos HTTP
     // ==========================================================
+
+    private class Reports implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            enviarMapReports(exchange);
+        }
+    }
 
     private class MissoesConcluidas implements HttpHandler {
         @Override
@@ -156,5 +167,34 @@ public class HTTPNM {
             }
             out.flush();
         }
+    }
+
+    public void enviarMapReports(HttpExchange exchange) throws IOException {
+        Map<String,File> reports = this.naveMae.getRoversReports();
+
+        if (reports == null) {
+            exchange.sendResponseHeaders(404, -1);
+            return;
+        }
+
+        exchange.sendResponseHeaders(200, 0);
+        try (DataOutputStream out = new DataOutputStream(new BufferedOutputStream(exchange.getResponseBody()))) {
+            out.writeInt(reports.size());
+            for (Map.Entry<String,File> entry : reports.entrySet()){
+                String id = entry.getKey();
+                File file = entry.getValue();
+
+                byte[] idBytes = id.getBytes();
+                byte[] imgBytes = readAllBytes(file.toPath());
+
+                out.writeInt(idBytes.length);
+                out.write(idBytes);
+
+                out.writeInt(imgBytes.length);
+                out.write(imgBytes);
+            }
+            out.flush();
+        }
+
     }
 }

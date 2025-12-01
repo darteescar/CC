@@ -1,4 +1,5 @@
 #Ignorar .class
 *.class
 bin/
-img/*.jpg
+img/naveMae/*.jpg
+img/groundControl/*.jpg

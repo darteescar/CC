@@ -258,13 +258,13 @@ public class RoverWorkerML implements Runnable{
 
             try {
                 byte[] imgBytes = col.reconstruirIMGBytes();
-                File out = new File("img/report_" + idRover + "_" + idReport + ".jpg");
+                File out = new File("img/naveMae/report_" + idRover + "_" + idReport + ".jpg");
                 try (FileOutputStream fos = new FileOutputStream(out)) {
                     fos.write(imgBytes);
                 }
                 System.out.println("[WorkerML - " + idRover + "] Report " + idReport + " reconstruído em " + out.getAbsolutePath());
 
-                this.nm.setRoverReport(idReport, out);
+                this.nm.setRoverReport(idRover, out);
 
             } catch (IOException e) {
                 System.err.println("[WorkerML - " + idRover + "] Falha ao montar imagem: " + e.getMessage());

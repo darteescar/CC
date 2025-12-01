@@ -3,6 +3,7 @@ package ground_control;
 import data.Estado;
 import data.Missao;
 import java.awt.*;
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import javax.swing.*;
@@ -16,7 +17,8 @@ public class GroundControlGUI {
 
      public GroundControlGUI(Map<String,Estado> estados,
                              Map<String,Missao> missoesAtuais,
-                             List<Missao> missoesConcluidas) {
+                             List<Missao> missoesConcluidas,
+                             Map<String,File> reports) {
 
         Color[] cores = {
                     Color.RED, Color.BLUE, Color.GREEN, Color.ORANGE,
@@ -34,7 +36,7 @@ public class GroundControlGUI {
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // top, left, bottom, right
 
         // ---------------------- ROVERS ----------------------
-        roverList = new RoverListPanel(estados, cores);
+        roverList = new RoverListPanel(estados, cores, reports);
         JScrollPane roversScroll = new JScrollPane(roverList);
         roversScroll.setPreferredSize(new Dimension(300, 840));
         roversScroll.setMinimumSize(new Dimension(300, 0));
