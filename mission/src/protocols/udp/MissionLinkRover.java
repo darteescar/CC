@@ -9,11 +9,10 @@ import data.TipoMensagem;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
 import java.net.*;
 import java.util.Arrays;
-import core.Rover;
+import java.util.concurrent.BlockingQueue;
+import javax.imageio.ImageIO;
 
 public class MissionLinkRover {
     private final String idRover;
@@ -276,13 +275,13 @@ public class MissionLinkRover {
                         i
             );
 
-                                envioML.sendMensagem(mREPORT.toByteArray(), 
-                                                    this.ipNaveMae, 
-                                                    this.portaNaveMae, 
-                                                    null
-                                );
-                                System.out.println("[" + idRover + " - ML] A enviar frame " + i + " do report " + idReport);
-                            }
+            envioML.sendMensagem(mREPORT.toByteArray(), 
+                                this.ipNaveMae, 
+                                this.portaNaveMae, 
+                                null
+            );
+            System.out.println("[" + idRover + " - ML] A enviar frame " + i + " do report " + idReport);
+        }
 
         Mensagem mEND = new Report(TipoMensagem.ML_END, 
                             this.idRover, 
@@ -335,14 +334,6 @@ public class MissionLinkRover {
                             i
                 );
 
-                                    envioML.sendMensagem(mREPORT.toByteArray(), 
-                                                        this.ipNaveMae, 
-                                                        this.portaNaveMae, 
-                                                        null
-                                    );
-                                    //System.out.println("[" + idRover + " - ML] A reenviar frame " + i + " do report " + idReport);
-                                }
-                            }
                 envioML.sendMensagem(mREPORT.toByteArray(), 
                                     this.ipNaveMae, 
                                     this.portaNaveMae, 
@@ -421,4 +412,3 @@ public class MissionLinkRover {
         envioML.stop();
     }
 }
-
