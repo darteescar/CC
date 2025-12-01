@@ -20,8 +20,8 @@ public class GroundControl {
 
         while (true) {
             try {
-                infos.atualizarDados(); 
-                gui.atualizar();         
+                infos.atualizarDados();
+                gui.atualizar();
                 Thread.sleep(1000);
             } catch(Exception e) {
                 e.printStackTrace();

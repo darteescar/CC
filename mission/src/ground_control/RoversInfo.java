@@ -12,8 +12,8 @@ import protocols.http.HTTPGC;
 public class RoversInfo {
 
      private final HTTPGC http;
-     private final Map<String, Estado> estados = new ConcurrentHashMap<>();
-     private final Map<String, Missao> missoesAtuais = new ConcurrentHashMap<>();
+     private Map<String, Estado> estados = new ConcurrentHashMap<>();
+     private Map<String, Missao> missoesAtuais = new ConcurrentHashMap<>();
      private List<Missao> missoesConcluidas = new ArrayList<>();
      private Map<String, File> reports = new ConcurrentHashMap<>();
 
@@ -37,9 +37,18 @@ public class RoversInfo {
                          // ignora 404 (caso raro de race condition)
                     }
                }
-               Map<String, File> novos = http.getMapReports();
-               reports.clear();
-               reports.putAll(novos);
+               // -----------------------------
+               // CORREÇÃO AQUI (não substituir o map)
+               // -----------------------------
+               Map<String, File> novosReports = http.getMapReports();
+
+               // remover reports antigos que já não existem
+               reports.keySet().removeIf(id -> !novosReports.containsKey(id));
+
+               // adicionar/atualizar reports novos
+               for (Map.Entry<String, File> e : novosReports.entrySet()) {
+                    reports.put(e.getKey(), e.getValue());
+               }
 
                missoesConcluidas.clear();
                missoesConcluidas.addAll(http.getMissoesConcluidas());
