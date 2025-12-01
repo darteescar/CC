@@ -2,8 +2,10 @@ package ground_control;
 
 import data.Estado;
 import data.Missao;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.util.Map;
 import javax.swing.JPanel;
@@ -63,13 +65,16 @@ public class MapaPanel extends JPanel {
 
      /** Desenha a área da missão correspondente */
      private void desenhaAreaMissao(Graphics g, Missao m, Color cor) {
-          g.setColor(cor);
+     Graphics2D g2 = (Graphics2D) g; // converter para Graphics2D
+     g2.setColor(cor);
 
-          int px = (int) (m.getX1() * getWidth() / 100.0);
-          int py = (int) (m.getY1() * getHeight() / 100.0);
-          int largura = (int) ((m.getX2() - m.getX1()) * getWidth() / 100.0);
-          int altura = (int) ((m.getY2() - m.getY1()) * getHeight() / 100.0);
+     g2.setStroke(new BasicStroke(4));
 
-          g.drawRect(px, py, largura, altura);
+     int px = (int) (m.getX1() * getWidth() / 100.0);
+     int py = (int) (m.getY1() * getHeight() / 100.0);
+     int largura = (int) ((m.getX2() - m.getX1()) * getWidth() / 100.0);
+     int altura = (int) ((m.getY2() - m.getY1()) * getHeight() / 100.0);
+
+     g2.drawRect(px, py, largura, altura);
      }
 }
