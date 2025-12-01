@@ -258,7 +258,7 @@ public class RoverWorkerML implements Runnable{
 
             try {
                 byte[] imgBytes = col.reconstruirIMGBytes();
-                File out = new File("img/naveMae/report_" + idRover + "_" + idReport + ".jpg");
+                File out = new File("img/nave-mae/report_" + idRover + "_" + idReport + ".jpg");
                 try (FileOutputStream fos = new FileOutputStream(out)) {
                     fos.write(imgBytes);
                 }

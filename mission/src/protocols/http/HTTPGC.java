@@ -139,7 +139,7 @@ public class HTTPGC {
             byte[] fileBytes = in.readNBytes(numBytes_file);
 
             // ---- CRIAR FICHEIRO TEMPORÁRIO ----
-            File f = new File("img/groundControl/" + id + ".png");  
+            File f = new File("img/ground-control/report_" + id + ".jpg");  
             //f.getParentFile().mkdirs();
 
             try (FileOutputStream fos = new FileOutputStream(f)) {
