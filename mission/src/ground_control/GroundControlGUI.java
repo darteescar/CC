@@ -43,7 +43,7 @@ public class GroundControlGUI {
         roversScroll.getVerticalScrollBar().setUnitIncrement(20);
 
         // ---------------------- MISSÕES ATUAIS ----------------------
-        missoesAtuaisPanel = new MissoesAtuaisPanel(missoesAtuais);
+        missoesAtuaisPanel = new MissoesAtuaisPanel(missoesAtuais, cores);
         JScrollPane missoesAtuaisScroll = new JScrollPane(missoesAtuaisPanel);
         missoesAtuaisScroll.setPreferredSize(new Dimension(330, 800));
         missoesAtuaisScroll.setMinimumSize(new Dimension(330, 100));
