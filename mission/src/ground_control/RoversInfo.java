@@ -37,8 +37,10 @@ public class RoversInfo {
                          // ignora 404 (caso raro de race condition)
                     }
                }
+               Map<String, File> novos = http.getMapReports();
                reports.clear();
-               reports = this.http.getMapReports();
+               reports.putAll(novos);
+
                missoesConcluidas.clear();
                missoesConcluidas.addAll(http.getMissoesConcluidas());
                Thread.sleep(1000);

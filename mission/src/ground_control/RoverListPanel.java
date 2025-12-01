@@ -68,7 +68,7 @@ public class RoverListPanel extends JPanel {
         if (report != null && report.exists()) {
             btn.addActionListener(e -> {
                 try {
-                    Desktop.getDesktop().open(report);
+                    abrirImagemEmJanela(report);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(btn,
                             "Não foi possível abrir o report:\n" + ex.getMessage(),
@@ -76,6 +76,29 @@ public class RoverListPanel extends JPanel {
                             JOptionPane.ERROR_MESSAGE);
                 }
             });
+        }
+    }
+
+    private void abrirImagemEmJanela(File imagem) {
+        try {
+            ImageIcon icon = new ImageIcon(imagem.getAbsolutePath());
+            JLabel label = new JLabel(icon);
+
+            JScrollPane scroll = new JScrollPane(label);
+
+            JFrame frame = new JFrame("Report: " + imagem.getName());
+            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            frame.setSize(800, 600);
+            frame.add(scroll);
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null,
+                    "Erro ao abrir imagem:\n" + e.getMessage(),
+                    "Erro",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
