@@ -93,7 +93,9 @@ public class NaveMae {
     }
 
     public void addMissaoConcluida(Missao m) {
-        this.missoesconcluidas.add(m);
+        if (m != null) {
+            this.missoesconcluidas.add(m.clone());
+        }
     }
 
     public List<Missao> getMissoesConcluidas() {

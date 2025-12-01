@@ -35,7 +35,8 @@ public class RoversInfo {
                          // ignora 404 (caso raro de race condition)
                     }
                }
-               missoesConcluidas = http.getMissoesConcluidas();
+               missoesConcluidas.clear();
+               missoesConcluidas.addAll(http.getMissoesConcluidas());
                Thread.sleep(1000);
           } catch (Exception e) {
                e.printStackTrace();

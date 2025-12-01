@@ -1,20 +1,19 @@
 package protocols.udp;
 
+import core.Rover;
 import data.EstadoOperacional;
 import data.Mensagem;
+import data.Missao;
 import data.Report;
 import data.TipoMensagem;
-import data.Missao;
-
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import javax.imageio.ImageIO;
 import java.net.*;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import core.Rover;
+import javax.imageio.ImageIO;
 
 public class MissionLinkRover {
     private final String idRover;
@@ -237,7 +236,7 @@ public class MissionLinkRover {
                                                     this.portaNaveMae, 
                                                     null
                                 );
-                                System.out.println("[" + idRover + " - ML] A enviar frame " + i + " do report " + idReport);
+                                //System.out.println("[" + idRover + " - ML] A enviar frame " + i + " do report " + idReport);
                             }
 
                             // Serializar o idReport
@@ -298,7 +297,7 @@ public class MissionLinkRover {
                                                         this.portaNaveMae, 
                                                         null
                                     );
-                                    System.out.println("[" + idRover + " - ML] A reenviar frame " + i + " do report " + idReport);
+                                    //System.out.println("[" + idRover + " - ML] A reenviar frame " + i + " do report " + idReport);
                                 }
                             }
 

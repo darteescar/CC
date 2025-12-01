@@ -76,9 +76,12 @@ public class RoverWorkerML implements Runnable{
 
     public void handleSYN() throws Exception{
         Missao atual = this.nm.getMissaoRover(idRover);
-        this.nm.addMissaoConcluida(atual);
-        this.nm.removeMissaoMap(idRover);
 
+        if (atual != null) {
+            this.nm.addMissaoConcluida(atual);
+            this.nm.removeMissaoMap(idRover);
+        }
+        
         Mensagem mSYNACK = new Mensagem(TipoMensagem.ML_SYNACK, 
                                         "NaveMae", 
                                         nm.getIP(), 
@@ -286,7 +289,6 @@ public class RoverWorkerML implements Runnable{
         coletores.remove(idReport);
         System.out.println("[WorkerML - " + idRover + "] FINACK de: " + idRover);
     }
-
 
     public void addMensagemQueue(Mensagem m){
         queue.offer(m);
