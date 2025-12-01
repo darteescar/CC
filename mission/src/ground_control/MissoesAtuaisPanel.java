@@ -7,10 +7,12 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 
 public class MissoesAtuaisPanel extends JPanel {
+     private final Color[] cores;
      private Map<String,Missao> missoesAtuais;
 
-     public MissoesAtuaisPanel(Map<String,Missao> missoes){
+     public MissoesAtuaisPanel(Map<String,Missao> missoes, Color[] cores){
           this.missoesAtuais = missoes;
+          this.cores = cores;
 
           setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
           setBackground(Color.GRAY);
@@ -27,15 +29,17 @@ public class MissoesAtuaisPanel extends JPanel {
      public void atualizar() {
           removeAll();
 
+          int i = 0;
           for (var entry : missoesAtuais.entrySet()) {
-               add(criarPainel(entry.getValue()));
+               add(criarPainel(entry.getValue(), cores[i % cores.length]));
+               i++;
           }
 
           revalidate();
           repaint();
      }
 
-     private JPanel criarPainel(Missao m) {
+     private JPanel criarPainel(Missao m, Color cor) {
           JPanel p = new JPanel();
           p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
           p.setBackground(Color.WHITE);
@@ -43,6 +47,7 @@ public class MissoesAtuaisPanel extends JPanel {
           String id = "Missão " + String.valueOf(m.getId());
           JLabel titulo = new JLabel(id);
           titulo.setFont(new Font("Arial", Font.BOLD, 20));
+          titulo.setForeground(cor);
           titulo.setAlignmentX(CENTER_ALIGNMENT);
 
           JLabel info = new JLabel(String.format(

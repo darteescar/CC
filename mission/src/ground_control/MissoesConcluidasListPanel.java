@@ -2,10 +2,8 @@ package ground_control;
 
 import data.Missao;
 import java.awt.*;
-import java.util.Map;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MissoesConcluidasListPanel extends JPanel {

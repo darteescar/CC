@@ -47,7 +47,11 @@ public class MissionLinkNM {
                     TipoMensagem tp = temp.getTipo();
 
                     Mensagem m;
-                    if(tp == TipoMensagem.ML_REPORT){
+                    if(tp == TipoMensagem.ML_FRAMES
+                    || tp == TipoMensagem.ML_REPORT
+                    || tp == TipoMensagem.ML_END
+                    || tp == TipoMensagem.ML_FINACK
+                    ){
                         m = Report.fromByteArray(pacote.getData());
                     }else{
                         m = temp;

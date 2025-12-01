@@ -9,17 +9,28 @@ import java.net.InetAddress;
 
 
 public class Report extends Mensagem {
-    private String idReport;
-    private int numSeq;
+    private String idReport; // Identificador do report
+    private int numFrames; // Numero de frams associado a este report
+    private int numSeq; // Numero de sequencia da mesnsagem (só usado no tipo ML_REPORT)
 
     /* ====== Construtor ====== */
 
-    public Report(TipoMensagem tm, String id_org, InetAddress ip_org, int porta_org,
-                    String id_dest, InetAddress ip_dest, int porta_dest, byte[] payload,
-                    String idReport, int numSeq) {
+    public Report(TipoMensagem tm, 
+                    String id_org, 
+                    InetAddress ip_org, 
+                    int porta_org,
+                    String id_dest, 
+                    InetAddress ip_dest, 
+                    int porta_dest, 
+                    byte[] payload,
+                    String idReport,
+                    int numFrames,
+                    int numSeq) {
                         
         super(tm, id_org, ip_org, porta_org, id_dest, ip_dest, porta_dest, payload);
+
         this.idReport = idReport;
+        this.numFrames = numFrames;
         this.numSeq = numSeq;
     }
 
@@ -27,6 +38,10 @@ public class Report extends Mensagem {
 
     public String getIdReport(){
         return this.idReport;
+    }
+
+    public int getNumFrames(){
+        return this.numFrames;
     }
 
     public int getNumSeq(){
@@ -60,6 +75,9 @@ public class Report extends Mensagem {
         //IdReport
         Mensagem.writeString(dos, idReport);
 
+        // NumFrames
+        dos.writeInt(numFrames);
+
         // NumSeq
         dos.writeInt(numSeq);
 
@@ -91,8 +109,9 @@ public class Report extends Mensagem {
         dis.readFully(payload);
 
         String idReport = readString(dis);
+        int numFrames = dis.readInt();
         int numSeq = dis.readInt();
 
-        return new Report(tm, id_org, ip_org, porta_org, id_dest, ip_dest, porta_dest, payload, idReport, numSeq );
+        return new Report(tm, id_org, ip_org, porta_org, id_dest, ip_dest, porta_dest, payload, idReport, numFrames, numSeq );
     }
 }

@@ -51,14 +51,29 @@ public class RoverListPanel extends JPanel {
         titulo.setForeground(cor);
         titulo.setAlignmentX(CENTER_ALIGNMENT);
 
+        String estadoRover = switch (estado.getEstadoOperacional()) {
+            case EM_MISSAO -> "Em Missão";
+            case ESPERA_MISSAO -> "Espera Missão";
+            case A_CAMINHO -> "A Caminho";
+            case PARADO -> "Parado";
+            default -> "Inoperacional";
+        };
+
+        int bateria = estado.getBateria();
+        String corBateria = bateria >= 75 ? "green" : (bateria >= 40 ? "orange" : "red");
+
         JLabel info = new JLabel(String.format(
             "<html>"
                 + "<b>Posição:</b> (%.1f, %.1f)<br>"
-                + "<b>Bateria:</b> %d%%<br>"
-                + "<b>Velocidade:</b> %.1f m/s</html>",
+                + "<b>Bateria:</b> <span style='color:%s'>%d%%</span><br>"
+                + "<b>Velocidade:</b> %.1f Km/h<br>"
+                + "<b>Estado:</b> %s"
+                + "</html>",
             estado.getX(), estado.getY(),
-            estado.getBateria(),
-            estado.getVelocidade()
+            corBateria,
+            bateria,
+            estado.getVelocidade(),
+            estadoRover 
         ));
         info.setFont(new Font("Arial", Font.PLAIN, 18));
         info.setAlignmentX(CENTER_ALIGNMENT);

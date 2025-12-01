@@ -10,10 +10,10 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.*;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
 import javax.imageio.ImageIO;
+import java.net.*;
+import java.util.Arrays;
+import core.Rover;
 
 public class MissionLinkRover {
     private final String idRover;
@@ -25,6 +25,9 @@ public class MissionLinkRover {
     private volatile boolean running = true;
     private int ultimaMissao = -1;
 
+    private final Demultiplexer demultiplexer;
+    private final Thread thread_demultiplexer;
+
     /* ====== Construtor ====== */
     public MissionLinkRover(String idRover, int porta, InetAddress ipNaveMae, int portaNaveMae) throws Exception {
         this.idRover = idRover;
@@ -33,15 +36,12 @@ public class MissionLinkRover {
         this.envioML = new EnvioML(socket);
         this.ipNaveMae = ipNaveMae;
         this.portaNaveMae = portaNaveMae;
-        System.out.println("[" + idRover + " - ML]: Conectado na porta: " + porta);
-    }
 
-    public Mensagem receiveMensagem() throws IOException {
-        byte[] buffer = new byte[65507];
-        DatagramPacket pacote = new DatagramPacket(buffer, buffer.length);
-        socket.receive(pacote);
-        Mensagem m = Mensagem.fromByteArray(buffer);
-        return m;
+        System.out.println("[" + idRover + " - ML]: Conectado na porta: " + porta);
+
+        this.demultiplexer = new Demultiplexer(socket);
+        this.thread_demultiplexer = new Thread(demultiplexer, "Demultiplexer-" + idRover);
+        this.thread_demultiplexer.start();
     }
 
     public void startMLRover(Rover rover) {
@@ -75,7 +75,8 @@ public class MissionLinkRover {
                 }
 
                 try {
-                    Mensagem m = receiveMensagem();
+                    Mensagem m = demultiplexer.getMissaoQueue().take();
+
                     if (m == null) {
                         continue;
                     }
@@ -94,18 +95,19 @@ public class MissionLinkRover {
                                                             "NaveMae", 
                                                             this.ipNaveMae, 
                                                             this.portaNaveMae, 
-                                                            null);
+                                                            null
+                            );
 
-                            // Enviar REQUEST e esperar DATA
+                            // Enviar REQUEST e nao espera por nada
+                            // Assim nao ha risco de passar missoes a frente
                             envioML.sendMensagem(mREQUEST.toByteArray(), 
                                                 this.ipNaveMae, 
                                                 this.portaNaveMae, 
-                                                this.idRover + "_REQUEST");
+                                                null 
+                            );
                         }
 
                         case ML_DATA -> {
-                            // Confirmar o REQUEST (parar retransmissão)
-                            envioML.confirmarRececao(idRover + "_REQUEST");
                             System.out.println("[" + idRover + " - ML]: DATA (Missão) de: NaveMae");
 
                             Mensagem mCONFIRM = new Mensagem(TipoMensagem.ML_CONFIRM, 
@@ -157,6 +159,7 @@ public class MissionLinkRover {
 
     public void handlerReportMissao(Rover rover, Missao misao, int numReport){
         try{
+            // Alternar qual imagem vai no report
             String path = "resources/marte_1.jpg";
             if((numReport % 2) == 0) path = "resources/marte_2.jpg";
 
@@ -166,131 +169,171 @@ public class MissionLinkRover {
             ImageIO.write(img, "jpg", baos);
             byte[] imgBytes = baos.toByteArray();
 
+            // Variaveis importantes para o report
             int tamMax = 4096;
             int numFrames = (imgBytes.length + tamMax -1) / tamMax;
             String idReport = misao.getId() + "-" + numReport;
-            System.out.println("[" + idRover + " - ML]: Começar Report: " + idReport);
 
-            // Serializar o idReport e numFrames
-            byte[] texto = idReport.getBytes();
-            ByteBuffer bb = ByteBuffer.allocate(4 + 4 + texto.length);
-            bb.putInt(numFrames);
-            bb.putInt(texto.length);
-            bb.put(texto);
+            // Envio de mensagem do tipo FRAMES
+            enviaFRAMES(rover.getIP(), idReport, numFrames);
 
-            byte[] payloadFRAMES = bb.array();
-
-            Mensagem mFRAMES = new Mensagem(TipoMensagem.ML_FRAMES, 
-                                                this.idRover, 
-                                                rover.getIP(), 
-                                                this.porta, 
-                                                "NaveMae", 
-                                                this.ipNaveMae, 
-                                                this.portaNaveMae, 
-                                                payloadFRAMES
-
-            );
-
-            // Envia FRAMES e espera por OK
-            envioML.sendMensagem(mFRAMES.toByteArray(), 
-                                this.ipNaveMae, 
-                                this.portaNaveMae, 
-                                idReport + "_FRAMES"
-            );
-
-            System.out.println("[" + idRover + " - ML]: Enviou FRAMES para NaveMae");
-
-            boolean recebido = false;
+            // Queue do desmultiplexer para as mensagens deste report (idReport)
+            BlockingQueue<Report> q = demultiplexer.getReportQueue(idReport);
+            
+            boolean recebido = false; // Para verificar se o report já foi recebido por completo
             while(!recebido){
                 try{
-                    Mensagem m = receiveMensagem();
-                    TipoMensagem tp = m.getTipo();
+                    Report r = q.take(); // Neste ciclo while todas a msg recebidas são reports
+                    String idReportRecebido = r.getIdReport();
+
+                    if(!idReportRecebido.equals(idReport)){
+                        // Verficamos se a thread deste report nao recebeu mensagem referente a outro report
+                        System.out.println("[" + idRover + " - ML - ERRO] Thread do report " + idReport + " recebeu mensagem (" +r.getTipo() +") do report " + idReportRecebido );
+                        System.out.println("[" + idRover + " - ML - ERRO] Ignorar mesagem do report " + idReportRecebido);
+                        continue;
+                    }
+
+                    TipoMensagem tp = r.getTipo();
 
                     switch(tp){
 
-                        case ML_OK -> {
-                            // Confirmar o FRAMES (parar retransmissão)
-                            envioML.confirmarRececao(idReport + "_FRAMES");
-                            System.out.println("[" + idRover + " - ML] OK de: NaveMae");
+                        case ML_OK -> handleOK(r, rover.getIP(), numFrames, tamMax, imgBytes);
+                        case ML_MISS -> handleMISS(r, rover.getIP(), numFrames, tamMax, imgBytes);
+                        case ML_FIN -> handleFIN(r, rover.getIP()); 
+                        case ML_STOP_CON -> {
+                            handleSTOP_CON(r, recebido);
+                            // Agora sim podemos dar report como concluido e fechar o ciclo while
+                            recebido = true;
+                        }
+                        
+                        default -> {
+                            break;
+                        }
+                    }
+                }catch(Exception e){
+                    System.out.println("[ERRO " + idRover + " - ML] while - Handler Report " + idReport + " " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
 
-                            // Envia todas as frames da imagem (REPORT) e nao espera por nada
-                            for(int i = 0; i < numFrames; i++){
-                                int inicio = i * tamMax;
-                                int fim = Math.min(inicio + tamMax, imgBytes.length);
-                                byte[] payloadREPORT = Arrays.copyOfRange(imgBytes, inicio, fim);
+            System.out.println("[" + idRover + " - ML] WHILE - SAI DO CICLO -> Thread do report " + idReport + " fechou" );
 
-                                Mensagem mREPORT = new Report(TipoMensagem.ML_REPORT, 
+        }catch(Exception e){
+            System.out.println("[ERRO " + idRover + " - ML] Handler Report Missao: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void enviaFRAMES(InetAddress ip_rover, String idReport, int numFrames) throws Exception{
+        System.out.println("[" + idRover + " - ML]: Começar Report: " + idReport);
+
+        Mensagem mFRAMES = new Report(TipoMensagem.ML_FRAMES, 
                                             this.idRover, 
-                                            rover.getIP(), 
+                                            ip_rover,
                                             this.porta, 
                                             "NaveMae", 
                                             this.ipNaveMae, 
                                             this.portaNaveMae, 
-                                            payloadREPORT,
+                                            null, 
                                             idReport,
-                                            i
-                                );
+                                            numFrames,
+                                            -1 // No FRAMES nao interessa o numSeq
+        );
+
+        // Envia FRAMES e espera por OK
+        envioML.sendMensagem(mFRAMES.toByteArray(), 
+                            this.ipNaveMae, 
+                            this.portaNaveMae, 
+                            idReport + "_FRAMES"
+        );
+
+        System.out.println("[" + idRover + " - ML]: Enviou FRAMES para NaveMae");
+    }
+
+    public void handleOK(Report report, InetAddress ip_rover, int numFrames, int tamMax, byte[] imgBytes) throws Exception{
+        String idReport = report.getIdReport();
+
+        // Confirmar o FRAMES (parar retransmissão)
+        envioML.confirmarRececao(idReport + "_FRAMES");
+        System.out.println("[" + idRover + " - ML] OK de: NaveMae");
+
+        // Envia todas as frames da imagem (REPORT) e nao espera por nada
+        for(int i = 0; i < numFrames; i++){
+            int inicio = i * tamMax;
+            int fim = Math.min(inicio + tamMax, imgBytes.length);
+            byte[] payloadREPORT = Arrays.copyOfRange(imgBytes, inicio, fim);
+
+            Mensagem mREPORT = new Report(TipoMensagem.ML_REPORT, 
+                        this.idRover, 
+                        ip_rover, 
+                        this.porta, 
+                        "NaveMae", 
+                        this.ipNaveMae, 
+                        this.portaNaveMae, 
+                        payloadREPORT,
+                        idReport,
+                        -1, // No REPORT nao interessa o numFrames
+                        i
+            );
 
                                 envioML.sendMensagem(mREPORT.toByteArray(), 
                                                     this.ipNaveMae, 
                                                     this.portaNaveMae, 
                                                     null
                                 );
-                                //System.out.println("[" + idRover + " - ML] A enviar frame " + i + " do report " + idReport);
+                                System.out.println("[" + idRover + " - ML] A enviar frame " + i + " do report " + idReport);
                             }
 
-                            // Serializar o idReport
-                            ByteBuffer bbEND = ByteBuffer.allocate(4 + texto.length);
-                            bbEND.putInt(texto.length);
-                            bbEND.put(texto);
+        Mensagem mEND = new Report(TipoMensagem.ML_END, 
+                            this.idRover, 
+                            ip_rover, 
+                            this.porta, 
+                            "NaveMae", 
+                            this.ipNaveMae, 
+                            this.portaNaveMae, 
+                            null,
+                            idReport,
+                            -1, // No END nao interessa o numFrames
+                            -1  // No END nao interessa o numSeq
+        );
 
-                            byte[] payloadEND = bbEND.array();
+        // Envia END e espera um MISS ou FIN (sinaliza fim das frames)
+        envioML.sendMensagem(mEND.toByteArray(), 
+                            this.ipNaveMae, 
+                            this.portaNaveMae, 
+                            idReport + "_END"
+        ); 
 
-                            Mensagem mEND = new Mensagem(TipoMensagem.ML_END, 
-                                                this.idRover, 
-                                                rover.getIP(), 
-                                                this.porta, 
-                                                "NaveMae", 
-                                                this.ipNaveMae, 
-                                                this.portaNaveMae, 
-                                                payloadEND
+        System.out.println("[" + idRover + " - ML]: Enviou END para NaveMae");
+    }
 
-                            );
+    public void handleMISS(Report report, InetAddress ip_rover, int numFrames, int tamMax, byte[]imgBytes) throws Exception {
+        String idReport = report.getIdReport();
 
-                            // Envia END e espera um MISS ou FIN (sinaliza fim das frames)
-                            envioML.sendMensagem(mEND.toByteArray(), 
-                                                this.ipNaveMae, 
-                                                this.portaNaveMae, 
-                                                idReport + "_END"
-                            ); 
+        // Confirmar o END (parar retransmissão)
+        envioML.confirmarRececao(idReport + "_END");
+        System.out.println("[" + idRover + " - ML] MISS de: NaveMae");
+        byte[] resposta = report.getPayload();
 
-                            System.out.println("[" + idRover + " - ML]: Enviou END para NaveMae");
-                        }
+        // Reenvia todas as frames da imagem (REPORT) e nao espera por nada
+        for(int i = 0; i < resposta.length; i++){
+            if(resposta[i] == 0){
+                int inicio = i * tamMax;
+                int fim = Math.min(inicio + tamMax, imgBytes.length);
+                byte[] payload = Arrays.copyOfRange(imgBytes, inicio, fim);
 
-                        case ML_MISS -> {
-                            // Confirmar o END (parar retransmissão)
-                            envioML.confirmarRececao(idReport + "_END");
-                            System.out.println("[" + idRover + " - ML] MISS de: NaveMae");
-                            byte[] resposta = m.getPayload();
-
-                            // Reenvia todas as frames da imagem (REPORT) e nao espera por nada
-                            for(int i = 0; i < resposta.length; i++){
-                                if(resposta[i] == 0){
-                                    int inicio = i * tamMax;
-                                    int fim = Math.min(inicio + tamMax, imgBytes.length);
-                                    byte[] payload = Arrays.copyOfRange(imgBytes, inicio, fim);
-
-                                    Mensagem mREPORT = new Report(TipoMensagem.ML_REPORT, 
-                                                this.idRover, 
-                                                rover.getIP(), 
-                                                this.porta, 
-                                                "NaveMae", 
-                                                this.ipNaveMae, 
-                                                this.portaNaveMae, 
-                                                payload,
-                                                idReport,
-                                                i
-                                    );
+                Mensagem mREPORT = new Report(TipoMensagem.ML_REPORT, 
+                            this.idRover, 
+                            ip_rover, 
+                            this.porta, 
+                            "NaveMae", 
+                            this.ipNaveMae, 
+                            this.portaNaveMae, 
+                            payload,
+                            idReport,
+                            -1, // No REPORT nao interessa o numFrames
+                            i
+                );
 
                                     envioML.sendMensagem(mREPORT.toByteArray(), 
                                                         this.ipNaveMae, 
@@ -300,79 +343,77 @@ public class MissionLinkRover {
                                     //System.out.println("[" + idRover + " - ML] A reenviar frame " + i + " do report " + idReport);
                                 }
                             }
-
-                            // Serializar o idReport
-                            ByteBuffer bbEND = ByteBuffer.allocate(4 + texto.length);
-                            bbEND.putInt(texto.length);
-                            bbEND.put(texto);
-
-                            byte[] payloadEND = bbEND.array();
-
-                            Mensagem mEND = new Mensagem(TipoMensagem.ML_END, 
-                                                this.idRover, 
-                                                rover.getIP(), 
-                                                this.porta, 
-                                                "NaveMae", 
-                                                this.ipNaveMae, 
-                                                this.portaNaveMae, 
-                                                payloadEND
-
-                            );
-
-                            System.out.println("[" + idRover + " - ML]: Reenviou END para NaveMae");
-
-                            // Envia END e espera um MISS ou FIN (sinaliza fim das frames)
-                            envioML.sendMensagem(mEND.toByteArray(), 
-                                                this.ipNaveMae, 
-                                                this.portaNaveMae, 
-                                                idReport + "_END"
-                            );
-
-                        }case ML_FIN -> {
-                            // Confirmar o END (parar retransmissão)
-                            envioML.confirmarRececao(idReport + "_END");
-                            System.out.println("[" + idRover + " - ML] FIN de: NaveMae");
-
-                            // Serializar o idReport
-                            ByteBuffer bbFINACK = ByteBuffer.allocate(4 + texto.length);
-                            bbFINACK.putInt(texto.length);
-                            bbFINACK.put(texto);
-
-                            byte[] payloadFINACK = bbFINACK.array();
-
-                            Mensagem mFINACK = new Mensagem(TipoMensagem.ML_FINACK, 
-                                                this.idRover, 
-                                                rover.getIP(), 
-                                                this.porta, 
-                                                "NaveMae", 
-                                                this.ipNaveMae, 
-                                                this.portaNaveMae, 
-                                                payloadFINACK
-                            );
-
-                            // Envia FINACK e nao espera por nada
-                            envioML.sendMensagem(mFINACK.toByteArray(), 
-                                                this.ipNaveMae, 
-                                                this.portaNaveMae, 
-                                                null
-                            );
-
-                            recebido = true;
-                            
-                        }default -> {
-                            break;
-                        }
-                    }
-                }catch(Exception e){
-                    System.out.println("[ERRO " + idRover + " - ML] while - Handler Report" + idReport +"Missao: " + e.getMessage());
-                    e.printStackTrace();
-                }
+                envioML.sendMensagem(mREPORT.toByteArray(), 
+                                    this.ipNaveMae, 
+                                    this.portaNaveMae, 
+                                    null
+                );
+                System.out.println("[" + idRover + " - ML] A reenviar frame " + i + " do report " + idReport);
             }
-        }catch(Exception e){
-            System.out.println("[ERRO " + idRover + " - ML] Handler Report Missao: " + e.getMessage());
-            e.printStackTrace();
         }
+
+        Mensagem mEND = new Report(TipoMensagem.ML_END, 
+                            this.idRover, 
+                            ip_rover, 
+                            this.porta, 
+                            "NaveMae", 
+                            this.ipNaveMae, 
+                            this.portaNaveMae, 
+                            null,
+                            idReport,
+                            -1, // No END nao interessa o numFrames
+                            -1  // No END nao interessa o numSeq
+        );
+
+        // Envia END e espera um MISS ou FIN (sinaliza fim das frames)
+        envioML.sendMensagem(mEND.toByteArray(), 
+                            this.ipNaveMae, 
+                            this.portaNaveMae, 
+                            idReport + "_END"
+        );
+
+        System.out.println("[" + idRover + " - ML]: Reenviou END para NaveMae");
     }
+
+    public void handleFIN(Report report, InetAddress ip_rover) throws Exception {
+        String idReport = report.getIdReport();
+
+        // Confirmar o END (parar retransmissão)
+        envioML.confirmarRececao(idReport + "_END");
+        System.out.println("[" + idRover + " - ML] FIN de: NaveMae");
+
+        Mensagem mFINACK = new Report(TipoMensagem.ML_FINACK, 
+                            this.idRover, 
+                            ip_rover, 
+                            this.porta, 
+                            "NaveMae", 
+                            this.ipNaveMae, 
+                            this.portaNaveMae, 
+                            null,
+                            idReport,
+                            -1, // No FINACK nao interessa o numFrames
+                            -1  // No FINACK nao interessa o numSeq
+        );
+
+        // Envia FINACK e nao espera por nada
+        envioML.sendMensagem(mFINACK.toByteArray(), 
+                            this.ipNaveMae, 
+                            this.portaNaveMae, 
+                            idReport + "_FINACK"
+        );
+
+        System.out.println("[" + idRover + " - ML]: Enviou FINACK para NaveMae");
+}
+
+    public void handleSTOP_CON(Report report, boolean recebido) {
+        String idReport = report.getIdReport();
+
+        // Confirmar o FINACK (parar retransmissão)
+        envioML.confirmarRececao(idReport + "_FINACK");
+        System.out.println("[" + idRover + " - ML] STOP_CON de: NaveMae (" + idReport + ")");
+        System.out.println("[" + idRover + " - ML] A fechar WHILE para o report " + idReport);
+    }
+
 
     public void stopMLRover() {
         running = false;
