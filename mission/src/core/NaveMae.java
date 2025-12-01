@@ -1,6 +1,8 @@
 package core;
 
 import data.*;
+
+import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -20,6 +22,7 @@ public class NaveMae {
     private Map<String, InetAddress> roversIP;
     private Map<String, Integer> roversPorta;
     private Map<String, Missao> roversMissao;
+    private Map<String, File> roversReports;
     private List <Missao> missoesconcluidas;
 
     private final BlockingQueue<Missao> queue;
@@ -45,6 +48,7 @@ public class NaveMae {
         this.roversIP = new ConcurrentHashMap<>();
         this.roversPorta = new ConcurrentHashMap<>();
         this.roversMissao = new ConcurrentHashMap<>();
+        this.roversReports = new ConcurrentHashMap<>();
         this.missoesconcluidas = new ArrayList<>();
 
         try {
@@ -76,6 +80,10 @@ public class NaveMae {
         return this.portaTCP;
     }
 
+    public void setRoverReport(String idRover, File img){
+        this.roversReports.put(idRover, img);
+    }
+
     /* ====== Funcionalidades necessárias ao HTTP ====== */
 
     public Estado getEstadoRover(String idRover){
@@ -101,6 +109,10 @@ public class NaveMae {
     public List<Missao> getMissoesConcluidas() {
         List<Missao> lista = new ArrayList<>(this.missoesconcluidas);
         return lista;
+    }
+
+    public Map<String, File> getRoversReports(){
+        return new ConcurrentHashMap<>(this.roversReports);
     }
 
     /* ====== Métodos ====== */

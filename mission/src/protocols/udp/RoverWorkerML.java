@@ -264,6 +264,8 @@ public class RoverWorkerML implements Runnable{
                 }
                 System.out.println("[WorkerML - " + idRover + "] Report " + idReport + " reconstruído em " + out.getAbsolutePath());
 
+                this.nm.setRoverReport(idReport, out);
+
             } catch (IOException e) {
                 System.err.println("[WorkerML - " + idRover + "] Falha ao montar imagem: " + e.getMessage());
                 e.printStackTrace();
