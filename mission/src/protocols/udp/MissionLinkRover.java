@@ -159,8 +159,14 @@ public class MissionLinkRover {
     public void handlerReportMissao(Rover rover, Missao misao, int numReport){
         try{
             // Alternar qual imagem vai no report
-            String path = "resources/marte_1.jpg";
-            if((numReport % 2) == 0) path = "resources/marte_2.jpg";
+            int alterna = numReport % 3;
+            String path = "resources/marte_1.jpg"; // Por segurança
+
+            switch(alterna){
+                case 0 -> path = "resources/marte_3.jpg";
+                case 1 -> path = "resources/marte_1.jpg";
+                case 2 -> path = "resources/marte_2.jpg";
+            }
 
             // Converter a imagem para um byte[]
             BufferedImage img = ImageIO.read(new File(path));

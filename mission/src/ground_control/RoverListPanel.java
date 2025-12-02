@@ -95,56 +95,53 @@ public class RoverListPanel extends JPanel {
         p.add(info);
 
         // ---- Botão para abrir imagem do relatório ----
-        JButton botao = new JButton("Abrir Report");
 
-        botao.setAlignmentX(CENTER_ALIGNMENT);
+        if (report != null) {
+            JButton botao = new JButton("Abrir Report");
 
-        botao.addActionListener(e -> {
-            if (report == null || !report.exists()) {
-                JOptionPane.showMessageDialog(p,
-                        "A imagem do report não foi encontrada.",
-                        "Erro",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            try {
-                BufferedImage img = ImageIO.read(report);
-                ImageIcon icon = new ImageIcon(img);
-                if (icon.getIconWidth() <= 0) {
-                    JOptionPane.showMessageDialog(p,
-                            "Não foi possível carregar a imagem.",
-                            "Erro",
-                            JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                JFrame janelaImagem = new JFrame("Report - " + nome);
-                janelaImagem.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                janelaImagem.setSize(1000, 600);
-                janelaImagem.setLayout(new BoxLayout(janelaImagem.getContentPane(), BoxLayout.Y_AXIS));
+            botao.setAlignmentX(CENTER_ALIGNMENT);
 
-                JLabel labelNome = new JLabel("Último report do " + nome);
-                labelNome.setFont(new Font("Arial", Font.PLAIN, 25));
-                labelNome.setBorder(null);
-                labelNome.setAlignmentX(CENTER_ALIGNMENT);
-                janelaImagem.add(labelNome);
+            botao.addActionListener(e -> {
+                
+                try {
+                    BufferedImage img = ImageIO.read(report);
+                    ImageIcon icon = new ImageIcon(img);
+                    if (icon.getIconWidth() <= 0) {
+                        JOptionPane.showMessageDialog(p,
+                                "Não foi possível carregar a imagem.",
+                                "Erro",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    JFrame janelaImagem = new JFrame("Report - " + nome);
+                    janelaImagem.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    janelaImagem.setSize(1000, 600);
+                    janelaImagem.setLayout(new BoxLayout(janelaImagem.getContentPane(), BoxLayout.Y_AXIS));
 
-                JLabel labelImagem = new JLabel(icon);
-                labelImagem.setBorder(null);
+                    JLabel labelNome = new JLabel("Último report do " + nome);
+                    labelNome.setFont(new Font("Arial", Font.PLAIN, 25));
+                    labelNome.setBorder(null);
+                    labelNome.setAlignmentX(CENTER_ALIGNMENT);
+                    janelaImagem.add(labelNome);
 
-                // Criar scroll sem borda
-                JScrollPane scroll = new JScrollPane(labelImagem);
-                scroll.setBorder(BorderFactory.createEmptyBorder());
+                    JLabel labelImagem = new JLabel(icon);
+                    labelImagem.setBorder(null);
 
-                janelaImagem.add(scroll);
+                    // Criar scroll sem borda
+                    JScrollPane scroll = new JScrollPane(labelImagem);
+                    scroll.setBorder(BorderFactory.createEmptyBorder());
 
-                janelaImagem.setVisible(true);
-            } catch (IOException e2) {
-                    System.out.println("Imagem buffered deu erro:" + e2.getMessage());
-            }        
-        });
+                    janelaImagem.add(scroll);
 
-        p.add(botao);
+                    janelaImagem.setVisible(true);
+                } catch (IOException e2) {
+                        System.out.println("Imagem buffered deu erro:" + e2.getMessage());
+                }        
+            });
 
+            p.add(botao);
+        }
+        
         return p;
     }
 
