@@ -7,6 +7,9 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import javax.swing.JPanel;
 
@@ -32,9 +35,12 @@ public class MapaPanel extends JPanel {
           // Fundo
           g.drawImage(fundo, 0, 0, getWidth(), getHeight(), this);
 
+          List<String> lista = new ArrayList<>(this.estados.keySet());
+          Collections.sort(lista);
+
           int i = 0;
           // Desenhar rovers e missões existentes
-          for (String nome : estados.keySet()) {
+          for (String nome : lista) {
 
                Estado e = estados.get(nome);
                Missao m = missoes.get(nome);
