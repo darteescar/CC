@@ -36,7 +36,7 @@ public class GroundControlGUI {
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // top, left, bottom, right
 
         // ---------------------- ROVERS ----------------------
-        roverList = new RoverListPanel(estados, cores, reports);
+        roverList = new RoverListPanel(estados, cores, reports, missoesAtuais);
         JScrollPane roversScroll = new JScrollPane(roverList);
         roversScroll.setPreferredSize(new Dimension(300, 840));
         roversScroll.setMinimumSize(new Dimension(300, 0));

@@ -1,6 +1,7 @@
 package ground_control;
 
 import data.Estado;
+import data.Missao;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -9,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -18,11 +21,15 @@ public class RoverListPanel extends JPanel {
     private final Color[] cores;
     private final Map<String, Estado> estados;
     private final Map<String, File> reports;
+    private final Map <String, Missao> missoes;
+    private Map<String, String> ultimoReport; // Rover -> String com ultima missao + tarefa
 
-    public RoverListPanel(Map<String, Estado> estados, Color[] cores, Map<String,File> reports) {
+    public RoverListPanel(Map<String, Estado> estados, Color[] cores, Map<String,File> reports, Map <String, Missao> missoes) {
         this.estados = estados;
         this.cores = cores;
         this.reports = reports;
+        this.missoes = missoes;
+        this.ultimoReport = new ConcurrentHashMap<>();
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(Color.GRAY);
@@ -44,7 +51,16 @@ public class RoverListPanel extends JPanel {
 
         int i = 0;
         for (String nome : lista) {
-            add(criarPainel(nome, this.estados.get(nome),cores[i % cores.length], reports.get(nome)));
+            Missao m = missoes.get(nome);
+            if(m != null){
+                if(m.getTarefa().equals("Tirar Fotos") || m.getTarefa().equals("Gravar Video")){
+                    String info = m.getId() + " (" + m.getTarefa() + ")";
+                    this.ultimoReport.put(nome, info);
+                }
+            }
+            String ultimo_report = this.ultimoReport.get(nome);
+
+            add(criarPainel(nome, this.estados.get(nome),cores[i % cores.length], reports.get(nome), ultimo_report));
             i++;
         }
 
@@ -52,7 +68,7 @@ public class RoverListPanel extends JPanel {
         repaint();
     }
 
-    private JPanel criarPainel(String nome, Estado estado, Color cor, File report) {
+    private JPanel criarPainel(String nome, Estado estado, Color cor, File report, String ultimo_report) {
         JPanel p = new JPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
         p.setBackground(Color.WHITE);
@@ -118,7 +134,7 @@ public class RoverListPanel extends JPanel {
                     janelaImagem.setSize(1000, 600);
                     janelaImagem.setLayout(new BoxLayout(janelaImagem.getContentPane(), BoxLayout.Y_AXIS));
 
-                    JLabel labelNome = new JLabel("Último report do " + nome);
+                    JLabel labelNome = new JLabel("Último report do " + nome + " da Missão " + ultimo_report);
                     labelNome.setFont(new Font("Arial", Font.PLAIN, 25));
                     labelNome.setBorder(null);
                     labelNome.setAlignmentX(CENTER_ALIGNMENT);
