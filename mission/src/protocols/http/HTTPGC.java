@@ -28,9 +28,6 @@ public class HTTPGC {
         URI uri = new URI(baseUrl + endpoint);
         URL url = uri.toURL();
 
-        System.out.println(endpoint);
-        System.out.println();
-
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
 

@@ -131,9 +131,6 @@ public class NaveMae {
     }
 
     public Missao getMissaoQueue() throws InterruptedException{
-        System.out.println("---------------------");
-        System.out.println("tirei");
-        System.out.println("---------------------");
         return this.queue.take();
     }
 
@@ -177,17 +174,6 @@ public class NaveMae {
         }catch(UnknownHostException e){
             System.out.println("[NaveMae - ERRO]: problema com IP: " + e.getMessage());
             e.printStackTrace();
-        }
-    }
-
-    public void printaRoversMissoes() {
-        for (Map.Entry<String, Missao> en : roversMissao.entrySet()) {
-            String key = en.getKey();
-            Missao val = en.getValue();
-
-            System.out.println(key.toString());
-            System.out.println(val.toString());
-            
         }
     }
 }

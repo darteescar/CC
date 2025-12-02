@@ -313,8 +313,6 @@ public class RoverWorkerML implements Runnable{
         coletores.remove(idReport);
 
         System.out.println("[WorkerML - " + idRover + "] STOP_CON enviado para report " + idReport);
-
-        //this.nm.printaRoversMissoes();
     }
 
     public void addMensagemQueue(Mensagem m){
