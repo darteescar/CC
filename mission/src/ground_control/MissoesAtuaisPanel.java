@@ -2,6 +2,9 @@ package ground_control;
 
 import data.Missao;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -29,9 +32,12 @@ public class MissoesAtuaisPanel extends JPanel {
      public void atualizar() {
           removeAll();
 
+          List<String> lista = new ArrayList<>(this.missoesAtuais.keySet());
+          Collections.sort(lista);
+
           int i = 0;
-          for (var entry : missoesAtuais.entrySet()) {
-               add(criarPainel(entry.getValue(), cores[i % cores.length]));
+          for (String nome : lista) {
+               add(criarPainel(missoesAtuais.get(nome), cores[i % cores.length]));
                i++;
           }
 
