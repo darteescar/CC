@@ -142,6 +142,10 @@ public class NaveMae {
         this.roversMissao.remove(idRover);
     }
 
+    public void removeReportMap(String idRover){
+        this.roversReports.remove(idRover);
+    }
+
     public void startNaveMae(){
         Parser.parseMissoes(this.queue, "resources/missoes.json");
         this.ml.startMLNaveMae();

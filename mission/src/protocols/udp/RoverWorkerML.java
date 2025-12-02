@@ -79,6 +79,7 @@ public class RoverWorkerML implements Runnable{
         if (atual != null) {
             this.nm.addMissaoConcluida(atual);
             this.nm.removeMissaoMap(idRover);
+            this.nm.removeReportMap(idRover);
         }
         
         Mensagem mSYNACK = new Mensagem(TipoMensagem.ML_SYNACK, 

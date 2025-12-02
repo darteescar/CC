@@ -122,8 +122,8 @@ public class RoverListPanel extends JPanel {
                 janelaImagem.setSize(1000, 600);
                 janelaImagem.setLayout(new BoxLayout(janelaImagem.getContentPane(), BoxLayout.Y_AXIS));
 
-                JLabel labelNome = new JLabel("Último report do "+nome);
-                labelNome.setFont(new Font("Arial", Font.PLAIN, 35));
+                JLabel labelNome = new JLabel("Último report do " + nome);
+                labelNome.setFont(new Font("Arial", Font.PLAIN, 25));
                 labelNome.setBorder(null);
                 labelNome.setAlignmentX(CENTER_ALIGNMENT);
                 janelaImagem.add(labelNome);
