@@ -24,6 +24,8 @@ public class RoverWorkerML implements Runnable{
     private final Map<String, ColetorReport> coletores = new ConcurrentHashMap<>();
     private volatile boolean running = true;
 
+    private boolean primeiro = true;
+
     /* ====== Construtor ====== */
 
     public RoverWorkerML(String id, InetAddress ip, int porta, EnvioML envioML, NaveMae nm){
@@ -104,6 +106,8 @@ public class RoverWorkerML implements Runnable{
         // Confirma o SYNACK (parar retransmissão)
         envioML.confirmarRececao(idRover + "_SYNACK");
 
+        if(!primeiro) return;
+
         // Enviar missão
         Missao missao = nm.getMissaoQueue();
         this.nm.putMissaoMap(idRover, missao);
@@ -125,10 +129,14 @@ public class RoverWorkerML implements Runnable{
                             idRover + "_DATA"
         );
 
+        primeiro = false;
+
         System.out.println("[WorkerML - " + idRover + "] Missao enviada ao rover: " + idRover);
     }
 
     public void handleCONFIRM() throws Exception{
+        primeiro = true;
+
         // Confirma o CONFIRM (parar retransmissão)
         envioML.confirmarRececao(idRover + "_DATA");
 
