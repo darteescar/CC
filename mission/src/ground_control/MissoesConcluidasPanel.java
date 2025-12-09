@@ -2,14 +2,14 @@ package ground_control;
 
 import data.Missao;
 import java.awt.*;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import java.util.List;
 
-public class MissoesConcluidasListPanel extends JPanel {
+public class MissoesConcluidasPanel extends JPanel {
      private final List<Missao> missoesConcluidas;
 
-     public MissoesConcluidasListPanel (List<Missao> missoes) {
+     public MissoesConcluidasPanel (List<Missao> missoes) {
           this.missoesConcluidas = missoes;
 
           setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));

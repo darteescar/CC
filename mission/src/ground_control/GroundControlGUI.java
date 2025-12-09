@@ -11,7 +11,7 @@ import javax.swing.*;
 public class GroundControlGUI {
 
     private final RoverListPanel roverList;
-    private final MissoesConcluidasListPanel missoesConcluidasPanel;
+    private final MissoesConcluidasPanel missoesConcluidasPanel;
     private final MapaPanel mapa;
     private final MissoesAtuaisPanel missoesAtuaisPanel;
 
@@ -54,7 +54,7 @@ public class GroundControlGUI {
         missoesAtuaisScroll.getVerticalScrollBar().setUnitIncrement(20);
 
         // ---------------------- MISSÕES CONCLUÍDAS ---------------------
-        missoesConcluidasPanel = new MissoesConcluidasListPanel(missoesConcluidas);
+        missoesConcluidasPanel = new MissoesConcluidasPanel(missoesConcluidas);
         JScrollPane missoesConcluidasScroll = new JScrollPane(missoesConcluidasPanel);
         missoesConcluidasScroll.setPreferredSize(new Dimension(330, 840));
         missoesConcluidasScroll.setMinimumSize(new Dimension(330, 0));
