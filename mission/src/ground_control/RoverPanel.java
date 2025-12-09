@@ -11,12 +11,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 
-public class RoverListPanel extends JPanel {
+public class RoverPanel extends JPanel {
 
     private final Color[] cores;
     private final Map<String, Estado> estados;
@@ -24,7 +23,7 @@ public class RoverListPanel extends JPanel {
     private final Map <String, Missao> missoes;
     private Map<String, String> ultimoReport; // Rover -> String com ultima missao + tarefa
 
-    public RoverListPanel(Map<String, Estado> estados, Color[] cores, Map<String,File> reports, Map <String, Missao> missoes) {
+    public RoverPanel(Map<String, Estado> estados, Color[] cores, Map<String,File> reports, Map <String, Missao> missoes) {
         this.estados = estados;
         this.cores = cores;
         this.reports = reports;

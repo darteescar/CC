@@ -10,7 +10,7 @@ import javax.swing.*;
 
 public class GroundControlGUI {
 
-    private final RoverListPanel roverList;
+    private final RoverPanel roverList;
     private final MissoesConcluidasPanel missoesConcluidasPanel;
     private final MapaPanel mapa;
     private final MissoesAtuaisPanel missoesAtuaisPanel;
@@ -36,7 +36,7 @@ public class GroundControlGUI {
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // top, left, bottom, right
 
         // ---------------------- ROVERS ----------------------
-        roverList = new RoverListPanel(estados, cores, reports, missoesAtuais);
+        roverList = new RoverPanel(estados, cores, reports, missoesAtuais);
         JScrollPane roversScroll = new JScrollPane(roverList);
         roversScroll.setPreferredSize(new Dimension(300, 840));
         roversScroll.setMinimumSize(new Dimension(300, 0));
