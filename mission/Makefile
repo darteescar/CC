@@ -66,6 +66,7 @@ groundcontrol:
 clean:
 	@echo ">> A limpar ficheiros compilados..."
 	rm -rf $(BIN_DIR)/*
+	rm img/**/*.jpg
 	
 # Rebuild
 rebuild: clean compile

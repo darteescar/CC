@@ -4,7 +4,7 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 
-public class Mensagem implements Serializable {
+public class Mensagem {
     private TipoMensagem tm;
     private String id_org;
     private InetAddress ip_org;
