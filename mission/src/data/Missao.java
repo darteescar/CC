@@ -161,8 +161,7 @@ public class Missao implements Codificavel, Comparable<Missao>{
 
     @Override
     public int compareTo(Missao other) {
-        // Ordenação por id ascendente (IDs mais baixos têm maior prioridade).
-        // Ajusta aqui se preferires outra política (e.g., duração, área, etc.).
+        // Ordenação por id ascendente (IDs mais baixos têm maior prioridade)
         return Integer.compare(this.id, other.id);
     }
 }

@@ -37,9 +37,6 @@ public class RoversInfo {
                          // ignora 404 (caso raro de race condition)
                     }
                }
-               // -----------------------------
-               // CORREÇÃO AQUI (não substituir o map)
-               // -----------------------------
                Map<String, File> novosReports = http.getMapReports();
 
                // remover reports antigos que já não existem
