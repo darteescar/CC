@@ -1,7 +1,7 @@
 # CC (Comunicações por Computador) (Português)
 
 Projeto de grupo desenvolvido no âmbito da UC de CC. O projeto consiste na implementação de protocolos que correrm sobre UDP (MissionLink) e TCP (TelemetryStream) para a comunicação entre _Rovers_ e uma Nave Mãe, numa simulação de missões espaciais.
-Pode consultar o [enunciado](TP_CC_2526.pdf) do projeto e o respetivo [relatório](Relatorio_CC.pdf)
+Pode consultar o [enunciado](TP_CC_2526.pdf) do projeto e o respetivo [relatório](Relatorio_CC.pdf).
 
 ## Membros do grupo:
 
